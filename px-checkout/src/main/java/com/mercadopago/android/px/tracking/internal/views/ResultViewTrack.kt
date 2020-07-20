@@ -1,9 +1,9 @@
 package com.mercadopago.android.px.tracking.internal.views
 
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModel
 import com.mercadopago.android.px.internal.features.payment_result.remedies.RemedyType
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository
-import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel
 import com.mercadopago.android.px.model.PaymentResult
 import com.mercadopago.android.px.model.internal.remedies.RemediesResponse
@@ -19,18 +19,17 @@ class ResultViewTrack : TrackWrapper {
     private val remediesResponse: RemediesResponse
 
     constructor(paymentModel: PaymentModel, screenConfiguration: PaymentResultScreenConfiguration,
-        paymentSetting: PaymentSettingRepository, isMP: Boolean) {
+                paymentSetting: PaymentSettingRepository, isMP: Boolean) {
         resultViewTrackModel = ResultViewTrackModel(paymentModel, screenConfiguration, paymentSetting.checkoutPreference!!,
-            paymentSetting.currency.id, isMP)
+                paymentSetting.currency.id, isMP)
         paymentStatus = getMappedResult(paymentModel.paymentResult)
         this.remediesResponse = paymentModel.remedies
     }
 
-    constructor(paymentModel: BusinessPaymentModel, paymentSetting: PaymentSettingRepository, isMP: Boolean) {
-        resultViewTrackModel = ResultViewTrackModel(paymentModel, paymentSetting.checkoutPreference!!,
-            paymentSetting.currency.id, isMP)
-        paymentStatus = getMappedResult(paymentModel.paymentResult)
-        this.remediesResponse = paymentModel.remedies
+    constructor(paymentModel: PaymentCongratsModel, isMP: Boolean) {
+        resultViewTrackModel = ResultViewTrackModel(paymentModel, isMP)
+        paymentStatus = paymentModel.paymentStatus
+        this.remediesResponse = RemediesResponse.EMPTY
     }
 
     override fun getTrack() = TrackFactory.withView(getViewPath()).addData(getData()).build()

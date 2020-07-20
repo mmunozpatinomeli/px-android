@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.ViewTreeObserver;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsText;
 import com.mercadopago.android.px.internal.font.FontHelper;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -46,6 +47,14 @@ public class MPTextView extends AppCompatTextView {
     }
 
     public void setText(@NonNull final Text text) {
+        setText(text.getMessage());
+        ViewUtils.setTextColor(this, text.getTextColor());
+        if (TextUtil.isNotEmpty(text.getWeight())) {
+            FontHelper.setFont(this, PxFont.from(text.getWeight()));
+        }
+    }
+
+    public void setText(@NonNull final PaymentCongratsText text) {
         setText(text.getMessage());
         ViewUtils.setTextColor(this, text.getTextColor());
         if (TextUtil.isNotEmpty(text.getWeight())) {

@@ -77,6 +77,14 @@
                 android:layout_marginTop="25dp"
                 android:text="@string/lazy"/>
 
+            <Button
+                android:id="@+id/payment_congrats_button"
+                style="@style/px_button_normal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/px_button_height"
+                android:layout_marginTop="25dp"
+                android:text="@string/payment_congrats_init"/>
+
         </LinearLayout>
 
     </ScrollView>

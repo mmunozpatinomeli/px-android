@@ -9,6 +9,7 @@
     <string name="checkout_description">Just 5 minutes! In that time, you will be testing our checkout in your app.</string>
     <string name="select_checkout">Select a configuration</string>
     <string name="lazy">Lazy Sample</string>
+    <string name="payment_congrats_init">Payment Congrats</string>
     <string name="continue_label">Continue</string>
 
     <string name="start_for_wrong">Required response not specified</string>

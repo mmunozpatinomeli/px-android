@@ -7,16 +7,13 @@ import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import com.google.android.flexbox.FlexboxLayout;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
-import com.mercadopago.android.px.model.Currency;
-import com.mercadopago.android.px.model.Discount;
-import com.mercadopago.android.px.model.PayerCost;
 import java.math.BigDecimal;
 import java.util.Locale;
 
 public class PaymentResultAmount extends FlexboxLayout {
 
+    public static final String NO_RATE = "0";
     private final MPTextView title;
     private final MPTextView detail;
     private final MPTextView noRate;
@@ -44,95 +41,108 @@ public class PaymentResultAmount extends FlexboxLayout {
     public void setModel(@NonNull final Model model) {
         title.setText(getAmountTitle(model));
         ViewUtils.loadOrGone(getAmountDetail(model), detail);
-        ViewUtils.loadOrGone(getNoRate(model.payerCost), noRate);
+        ViewUtils.loadOrGone(getNoRate(model), noRate);
 
-        final Discount discount = model.discount;
-        if (discount != null) {
-            rawAmount.setText(getPrettyAmount(model.currency, model.rawAmount));
+        final String discountName = model.discountName;
+        if (discountName != null && !discountName.isEmpty()) {
+            rawAmount.setText(model.rawAmount);
             rawAmount.setPaintFlags(rawAmount.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            this.discount.setText(discount.getName());
+            discount.setText(discountName);
         } else {
             rawAmount.setVisibility(GONE);
-            this.discount.setVisibility(GONE);
-        }
-    }
-
-    @NonNull
-    private String getAmountTitle(@NonNull final Model model) {
-        if (hasPayerCostWithMultipleInstallments(model.payerCost)) {
-            final String installmentsAmount = getPrettyAmount(model.currency, model.payerCost.getInstallmentAmount());
-            return String.format(Locale.getDefault(), "%dx %s", model.payerCost.getInstallments(),
-                installmentsAmount);
-        } else {
-            return getPrettyAmount(model.currency, model.amount);
+            discount.setVisibility(GONE);
         }
     }
 
     @Nullable
-    private String getNoRate(@Nullable final PayerCost payerCost) {
-        if (hasPayerCostWithMultipleInstallments(payerCost)) {
-            final BigDecimal rate = payerCost.getInstallmentRate();
-            if (BigDecimal.ZERO.equals(rate)) {
+    private String getAmountDetail(@NonNull final Model model) {
+        if (hasPayerCostWithMultipleInstallments(model.numberOfInstallments)) {
+            return String.format(Locale.getDefault(), "(%s)",
+                model.installmentsTotalAmount);
+        }
+        return null;
+    }
+
+    @NonNull
+    private String getAmountTitle(@NonNull final Model model) {
+        if (hasPayerCostWithMultipleInstallments(model.numberOfInstallments) && model.installmentsAmount != null &&
+            !model.installmentsAmount.isEmpty()) {
+            return String.format(Locale.getDefault(), "%dx %s", model.numberOfInstallments,
+                model.installmentsAmount);
+        } else {
+            return model.amountPaid;
+        }
+    }
+
+    @Nullable
+    private String getNoRate(@Nullable final Model model) {
+        if (hasPayerCostWithMultipleInstallments(model.numberOfInstallments)) {
+            if (BigDecimal.ZERO.equals(model.installmentsRate)) {
                 return getResources().getString(R.string.px_zero_rate).toLowerCase();
             }
         }
         return null;
     }
 
-    @NonNull
-    private String getPrettyAmount(@NonNull final Currency currency, @NonNull final BigDecimal amount) {
-        return CurrenciesUtil.getLocalizedAmountWithoutZeroDecimals(currency, amount);
-    }
-
-    @Nullable
-    private String getAmountDetail(@NonNull final Model model) {
-        if (hasPayerCostWithMultipleInstallments(model.payerCost)) {
-            return String.format(Locale.getDefault(), "(%s)",
-                getPrettyAmount(model.currency, model.payerCost.getTotalAmount()));
-        }
-        return null;
-    }
-
-    private boolean hasPayerCostWithMultipleInstallments(@Nullable final PayerCost payerCost) {
-        return payerCost != null && payerCost.hasMultipleInstallments();
+    private boolean hasPayerCostWithMultipleInstallments(@Nullable final Integer numberOfInstallments) {
+        return numberOfInstallments != null && numberOfInstallments > 1;
     }
 
     public static final class Model {
-        @NonNull /* default */ final BigDecimal amount;
-        @NonNull /* default */ final BigDecimal rawAmount;
-        @NonNull /* default */ final Currency currency;
-        @Nullable /* default */ final PayerCost payerCost;
-        @Nullable /* default */ final Discount discount;
+        @NonNull public final String rawAmount;
+        @NonNull public final String amountPaid;
+        @Nullable public final String discountName;
+        @Nullable public final Integer numberOfInstallments;
+        @Nullable public final String installmentsAmount;
+        @Nullable public final BigDecimal installmentsRate;
+        @Nullable public final String installmentsTotalAmount;
 
         /* default */ Model(@NonNull final Builder builder) {
-            amount = builder.amount;
-            currency = builder.currency;
-            payerCost = builder.payerCost;
-            discount = builder.discount;
             rawAmount = builder.rawAmount;
+            amountPaid = builder.amountPaid;
+            discountName = builder.discountName;
+            numberOfInstallments = builder.numberOfInstallments;
+            installmentsAmount = builder.installmentsAmount;
+            installmentsRate = builder.installmentsRate;
+            installmentsTotalAmount = builder.installmentsTotalAmount;
         }
 
         public static class Builder {
-            @NonNull /* default */ BigDecimal amount;
-            @NonNull /* default */ BigDecimal rawAmount;
-            @NonNull /* default */ Currency currency;
-            @Nullable /* default */ PayerCost payerCost;
-            @Nullable /* default */ Discount discount;
+            /* default */ String rawAmount;
+            /* default */ String amountPaid;
+            @Nullable /* default */ String discountName;
+            @Nullable /* default */ Integer numberOfInstallments;
+            @Nullable /* default */ String installmentsAmount;
+            @Nullable /* default */ BigDecimal installmentsRate;
+            @Nullable /* default */ String installmentsTotalAmount;
 
-            public Builder(@NonNull final BigDecimal amount, @NonNull final BigDecimal rawAmount,
-                @NonNull final Currency currency) {
-                this.amount = amount;
+            public Builder(@NonNull final String amountPaid, @NonNull final String rawAmount) {
+                this.amountPaid = amountPaid;
                 this.rawAmount = rawAmount;
-                this.currency = currency;
             }
 
-            public Builder setPayerCost(@Nullable final PayerCost payerCost) {
-                this.payerCost = payerCost;
+            public Builder setNumberOfInstallments(@Nullable final Integer numberOfInstallments) {
+                this.numberOfInstallments = numberOfInstallments;
                 return this;
             }
 
-            public Builder setDiscount(@Nullable final Discount discount) {
-                this.discount = discount;
+            public Builder setInstallmentsAmount(@Nullable final String installmentsAmount) {
+                this.installmentsAmount = installmentsAmount;
+                return this;
+            }
+
+            public Builder setInstallmentsTotalAmount(@Nullable final String installmentsTotalAmount) {
+                this.installmentsTotalAmount = installmentsTotalAmount;
+                return this;
+            }
+
+            public Builder setInstallmentsRate(@Nullable final BigDecimal installmentsRate) {
+                this.installmentsRate = installmentsRate;
+                return this;
+            }
+
+            public Builder setDiscountName(@Nullable final String discountName) {
+                this.discountName = discountName;
                 return this;
             }
 

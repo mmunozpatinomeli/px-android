@@ -34,6 +34,8 @@ import com.mercadopago.android.px.internal.datasource.cache.Cache;
 import com.mercadopago.android.px.internal.datasource.cache.InitCacheCoordinator;
 import com.mercadopago.android.px.internal.datasource.cache.InitDiskCache;
 import com.mercadopago.android.px.internal.datasource.cache.InitMemCache;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PXPaymentCongratsTracking;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModel;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
@@ -140,6 +142,14 @@ public final class Session extends ApplicationModule {
         paymentSetting.configure(paymentConfiguration);
         resolvePreference(mercadoPagoCheckout, paymentSetting);
         // end Store persistent paymentSetting
+    }
+
+    public void init(@NonNull final PaymentCongratsModel paymentCongratsModel) {
+        final PXPaymentCongratsTracking trackingData = paymentCongratsModel.getPxPaymentCongratsTracking();
+        configurationModule.getTrackingRepository().reset();
+        configurationModule.getTrackingRepository().configure(
+            new TrackingRepository.Model(trackingData.getSessionId(), trackingData.getFlow(),
+                trackingData.getFlowExtraInfo()));
     }
 
     public boolean isInitialized() {

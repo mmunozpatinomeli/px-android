@@ -2,12 +2,12 @@ package com.mercadopago.android.px.internal.features.business_result
 
 import com.mercadolibre.android.mlbusinesscomponents.components.actioncard.MLBusinessActionCardViewData
 import com.mercadopago.android.px.internal.extensions.orIfEmpty
-import com.mercadopago.android.px.model.internal.CongratsResponse
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponse
 
 internal object MLBusinessMapper {
 
     @JvmStatic
-    fun map(model: CongratsResponse.MoneySplit?): MLBusinessActionCardViewData? = model?.takeIf { it.title != null }
+    fun map(model: PaymentCongratsResponse.ExpenseSplit?): MLBusinessActionCardViewData? = model?.takeIf { it.title != null }
             ?.run {
                 object : MLBusinessActionCardViewData {
                     override fun getAffordanceText() = action.label.orEmpty()

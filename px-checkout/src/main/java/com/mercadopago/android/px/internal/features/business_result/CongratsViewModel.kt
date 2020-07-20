@@ -4,16 +4,14 @@ import com.mercadolibre.android.mlbusinesscomponents.components.actioncard.MLBus
 import com.mercadolibre.android.mlbusinesscomponents.components.common.downloadapp.MLBusinessDownloadAppData
 import com.mercadolibre.android.mlbusinesscomponents.components.crossselling.MLBusinessCrossSellingBoxData
 import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingData
-import com.mercadopago.android.px.model.internal.Action
-import com.mercadopago.android.px.model.internal.Text
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponse
 
 internal data class CongratsViewModel(
         val loyaltyRingData: MLBusinessLoyaltyRingData?,
         val discountBoxData: PXDiscountBoxData?,
-        val showAllDiscounts: Action?,
+        val showAllDiscounts: PaymentCongratsResponse.Action?,
         val downloadAppData: MLBusinessDownloadAppData?,
         val actionCardViewData: MLBusinessActionCardViewData?,
         val crossSellingBoxData: List<MLBusinessCrossSellingBoxData>?,
-        val topTextBox: Text,
-        val viewReceipt: Action?,
+        val viewReceipt: PaymentCongratsResponse.Action?,
         val customOrder: Boolean)
