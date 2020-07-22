@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.view;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -20,13 +19,13 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
+import com.mercadopago.android.px.internal.viewmodel.AmountDescriptor;
 import com.mercadopago.android.px.internal.viewmodel.DiscountBriefColor;
 import com.mercadopago.android.px.internal.viewmodel.EmptyLocalized;
 import com.mercadopago.android.px.internal.viewmodel.IDetailColor;
 import com.mercadopago.android.px.internal.viewmodel.IDetailDrawable;
 import com.mercadopago.android.px.internal.viewmodel.ILocalizedCharSequence;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
-import com.mercadopago.android.px.model.DiscountOverview;
 import com.mercadopago.android.px.model.internal.Text;
 
 import static com.mercadopago.android.px.internal.util.AccessibilityUtilsKt.executeIfAccessibilityTalkBackEnable;
@@ -84,8 +83,8 @@ public class AmountDescriptorView extends ConstraintLayout {
     }
 
     public void update(@NonNull final AmountDescriptorView.Model model) {
-        if (model.discountOverview != null) {
-            updateAmountDescriptor(model.discountOverview, model.detailColor, model.briefColor, model.hasSplit);
+        if (model.amountDescriptor != null) {
+            updateAmountDescriptor(model.amountDescriptor, model.detailColor, model.briefColor, model.hasSplit);
         } else {
             updateTextColor(model.detailColor);
             updateLeftLabel(model);
@@ -113,21 +112,21 @@ public class AmountDescriptorView extends ConstraintLayout {
         });
     }
 
-    private void updateAmountDescriptor(@NonNull final DiscountOverview discountOverview,
+    private void updateAmountDescriptor(@NonNull final AmountDescriptor amountDescriptor,
         @NonNull final IDetailColor descriptorColor, @NonNull final IDetailColor briefColor, final boolean hasSplit) {
         ViewUtils
-            .loadTextListOrGone(descriptor, discountOverview.getDescription(), descriptorColor.getColor(getContext()));
+            .loadTextListOrGone(descriptor, amountDescriptor.getDescription(), descriptorColor.getColor(getContext()));
 
-        if (!hasSplit || ViewUtils.isScreenSize(getContext(), DisplayMetrics.DENSITY_XHIGH)) {
-            ViewUtils.loadTextListOrGone(brief, discountOverview.getBrief(), briefColor.getColor(getContext()));
+        if (!hasSplit || ViewUtils.isScreenDensity(getContext(), DisplayMetrics.DENSITY_XHIGH)) {
+            ViewUtils.loadTextListOrGone(brief, amountDescriptor.getBrief(), briefColor.getColor(getContext()));
         } else {
             brief.setVisibility(View.GONE);
         }
 
-        amount.setText(discountOverview.getAmount());
+        amount.setText(amountDescriptor.getAmount());
 
-        if (TextUtil.isNotEmpty(discountOverview.getUrl())) {
-            PicassoDiskLoader.get(getContext()).load(discountOverview.getUrl()).into(iconDescriptor);
+        if (TextUtil.isNotEmpty(amountDescriptor.getUrl())) {
+            PicassoDiskLoader.get(getContext()).load(amountDescriptor.getUrl()).into(iconDescriptor);
         }
     }
 
@@ -207,15 +206,15 @@ public class AmountDescriptorView extends ConstraintLayout {
         /* default */ @NonNull final IDetailColor detailColor;
         /* default */ @NonNull final IDetailColor briefColor;
         /* default */ @Nullable final Text leftText;
-        /* default */ @Nullable final DiscountOverview discountOverview;
+        /* default */ @Nullable final AmountDescriptor amountDescriptor;
         /* default */ @Nullable IDetailDrawable detailDrawable;
         /* default */ @Nullable IDetailColor detailDrawableColor;
         /* default */ @Nullable View.OnClickListener listener;
         /* default */ boolean hasSplit = false;
 
-        public Model(@NonNull final DiscountOverview discountOverview, @NonNull final IDetailColor detailColor,
+        public Model(@NonNull final AmountDescriptor amountDescriptor, @NonNull final IDetailColor detailColor,
             final boolean hasSplit) {
-            this.discountOverview = discountOverview;
+            this.amountDescriptor = amountDescriptor;
             this.detailColor = detailColor;
             this.briefColor = new DiscountBriefColor();
             this.hasSplit = hasSplit;
@@ -231,7 +230,7 @@ public class AmountDescriptorView extends ConstraintLayout {
             this.detailColor = detailColor;
             this.briefColor = new DiscountBriefColor();
             this.leftText = null;
-            this.discountOverview = null;
+            this.amountDescriptor = null;
         }
 
         public Model(@NonNull final ILocalizedCharSequence left, @NonNull final IDetailColor detailColor) {
@@ -240,7 +239,7 @@ public class AmountDescriptorView extends ConstraintLayout {
             this.briefColor = new DiscountBriefColor();
             this.right = new EmptyLocalized();
             this.leftText = null;
-            this.discountOverview = null;
+            this.amountDescriptor = null;
         }
 
         public Model(@NonNull final Text leftText, @NonNull final IDetailColor detailColor) {
@@ -249,7 +248,7 @@ public class AmountDescriptorView extends ConstraintLayout {
             this.briefColor = new DiscountBriefColor();
             this.left = new EmptyLocalized();
             this.right = new EmptyLocalized();
-            this.discountOverview = null;
+            this.amountDescriptor = null;
         }
 
         AmountDescriptorView.Model setDetailDrawable(@Nullable final IDetailDrawable detailDrawable,

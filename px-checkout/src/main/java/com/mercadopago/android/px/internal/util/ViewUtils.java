@@ -412,7 +412,7 @@ public final class ViewUtils {
         }
     }
 
-    public static boolean isScreenSize(@NonNull final Context context, final int density) {
+    public static boolean isScreenDensity(@NonNull final Context context, final int density) {
             final float densityScale = 1.0f / DisplayMetrics.DENSITY_DEFAULT;
             final float screenDensity = context.getResources().getDisplayMetrics().density / densityScale;
 

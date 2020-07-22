@@ -11,6 +11,7 @@ import com.mercadopago.android.px.internal.viewmodel.IDetailColor;
 import com.mercadopago.android.px.internal.viewmodel.ItemLocalized;
 import com.mercadopago.android.px.internal.viewmodel.SummaryViewDefaultColor;
 import com.mercadopago.android.px.internal.viewmodel.SummaryViewDetailDrawable;
+import com.mercadopago.android.px.internal.viewmodel.mappers.AmountDescriptorMapper;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
@@ -61,7 +62,8 @@ public class SummaryDetailDescriptorFactory {
         final IDetailColor detailColor = new DiscountDetailColor();
         final boolean hasSplit = amountConfiguration != null && amountConfiguration.allowSplit();
         if (discountOverview != null) {
-            list.add(new AmountDescriptorView.Model(discountOverview, detailColor, hasSplit)
+            list.add(new AmountDescriptorView.Model(new AmountDescriptorMapper().map(discountOverview), detailColor,
+                hasSplit)
                 .setDetailDrawable(new SummaryViewDetailDrawable(), detailColor)
                 .setListener(v -> listener.onDiscountAmountDescriptorClicked(discountModel)));
         }
