@@ -17,6 +17,7 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModel;
 import com.mercadopago.android.px.internal.util.Logger;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
@@ -34,6 +35,8 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
 
     private static final String TAG = BusinessPaymentResultActivity.class.getSimpleName();
     private static final String EXTRA_BUSINESS_PAYMENT_MODEL = "extra_business_payment_model";
+    private static final String PAYMENT_CONGRATS = "payment_congrats";
+
 
     public static void startWithForwardResult(@NonNull final Activity activity, @NonNull final BusinessPaymentModel model) {
         final Intent intent = new Intent(activity, BusinessPaymentResultActivity.class);
@@ -75,8 +78,9 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
     @NonNull
     private BusinessPaymentResultPresenter createPresenter() {
         final BusinessPaymentModel model = getIntent().getParcelableExtra(EXTRA_BUSINESS_PAYMENT_MODEL);
-        return new BusinessPaymentResultPresenter(Session.getInstance().getConfigurationModule().getPaymentSettings(),
-            model, BehaviourProvider.getFlowBehaviour(), isMP(this));
+        final PaymentCongratsModel paymentCongratsModel = getIntent().getParcelableExtra(PAYMENT_CONGRATS);
+        return new BusinessPaymentResultPresenter(paymentCongratsModel,
+             BehaviourProvider.getFlowBehaviour(), isMP(this));
     }
 
     @Override
