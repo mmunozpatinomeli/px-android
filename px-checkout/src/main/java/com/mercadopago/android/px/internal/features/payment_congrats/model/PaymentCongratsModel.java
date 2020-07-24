@@ -193,9 +193,13 @@ public class PaymentCongratsModel implements Parcelable {
     }
 
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     public PaymentCongratsResponse getPaymentCongratsResponse() {
         return paymentCongratsResponse;
+    }
+
+    public int getIconId() {
+        return iconId;
     }
 
     public Boolean hasTopFragment() {

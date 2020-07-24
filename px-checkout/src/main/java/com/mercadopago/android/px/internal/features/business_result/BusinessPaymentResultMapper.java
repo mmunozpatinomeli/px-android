@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.features.business_result;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModel;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
 import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.view.PaymentResultMethod;
@@ -17,11 +18,11 @@ import java.util.List;
 public class BusinessPaymentResultMapper extends Mapper<BusinessPaymentModel, BusinessPaymentResultViewModel> {
 
     @Override
-    public BusinessPaymentResultViewModel map(@NonNull final BusinessPaymentModel model) {
-        final PaymentResultHeader.Model headerModel = getHeaderModel(model.getPayment());
+    public BusinessPaymentResultViewModel map(@NonNull final PaymentCongratsModel model) {
+        final PaymentResultHeader.Model headerModel = getHeaderModel(model);
         final PaymentResultBody.Model bodyModel = getBodyModel(model);
         return new BusinessPaymentResultViewModel(headerModel, bodyModel,
-            model.getPayment().getPrimaryAction(), model.getPayment().getSecondaryAction());
+            model.getExitActionPrimary(), model.getExitActionSecondary());
     }
 
     @NonNull
@@ -50,10 +51,10 @@ public class BusinessPaymentResultMapper extends Mapper<BusinessPaymentModel, Bu
     }
 
     @NonNull
-    private PaymentResultHeader.Model getHeaderModel(@NonNull final BusinessPayment payment) {
+    private PaymentResultHeader.Model getHeaderModel(@NonNull final PaymentCongratsModel payment) {
         final PaymentResultHeader.Model.Builder builder = new PaymentResultHeader.Model.Builder();
 
-        builder.setIconImage(payment.getIcon() == 0 ? R.drawable.px_icon_product : payment.getIcon());
+        builder.setIconImage(payment.getIconId() == 0 ? R.drawable.px_icon_product : payment.getIconId());
         builder.setIconUrl(payment.getImageUrl());
 
         final PaymentResultType type = PaymentResultType.from(payment.getDecorator());
