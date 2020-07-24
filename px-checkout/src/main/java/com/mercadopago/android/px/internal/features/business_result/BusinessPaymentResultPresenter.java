@@ -4,6 +4,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.addons.FlowBehaviour;
 import com.mercadopago.android.px.internal.base.BasePresenter;
+import com.mercadopago.android.px.internal.features.payment_congrats.PaymentCongrats;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModel;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponse;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
@@ -31,15 +34,15 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 /* default */ class BusinessPaymentResultPresenter extends BasePresenter<BusinessPaymentResultContract.View>
     implements ActionDispatcher, BusinessPaymentResultContract.Presenter, PaymentResultBody.Listener {
 
-    private final BusinessPaymentModel model;
-    private final ResultViewTrack viewTracker;
+    private final PaymentCongratsModel model;
+//    private final ResultViewTrack viewTracker;
     private final FlowBehaviour flowBehaviour;
 
-    /* default */ BusinessPaymentResultPresenter(@NonNull final PaymentSettingRepository paymentSettings,
-        @NonNull final BusinessPaymentModel model, @NonNull final FlowBehaviour flowBehaviour, final boolean isMP) {
+    /* default */ BusinessPaymentResultPresenter(@NonNull final PaymentCongratsModel model,
+        @NonNull final FlowBehaviour flowBehaviour, final boolean isMP) {
         this.model = model;
         this.flowBehaviour = flowBehaviour;
-        viewTracker = new ResultViewTrack(model, paymentSettings, isMP);
+//        viewTracker = new ResultViewTrack(model, paymentSettings, isMP);
     }
 
     @Override
@@ -51,7 +54,7 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
     @Override
     public void onFreshStart() {
         viewTracker.track();
-        flowBehaviour.trackConversion(new FlowBehaviourResultMapper().map(model.getPayment()));
+//        flowBehaviour.trackConversion(new FlowBehaviourResultMapper().map(model.getPayment()));
     }
 
     @Override
@@ -129,7 +132,7 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 
     @Override
     public void onClickMoneySplit() {
-        final CongratsResponse.MoneySplit moneySplit = model.getCongratsResponse().getMoneySplit();
+        final PaymentCongratsResponse.MoneySplit moneySplit = model.getPaymentCongratsResponse().getMoneySplit();
         final String deepLink;
         if (moneySplit != null && (deepLink = moneySplit.getAction().getTarget()) !=  null) {
             new CongratsSuccessDeepLink(DeepLinkType.MONEY_SPLIT_TYPE, deepLink).track();
