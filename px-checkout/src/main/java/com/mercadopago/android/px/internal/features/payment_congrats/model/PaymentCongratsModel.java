@@ -10,7 +10,6 @@ import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.ExternalFragment;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 public class PaymentCongratsModel implements Parcelable {
     public static final Parcelable.Creator<PaymentCongratsModel> CREATOR =
@@ -117,7 +116,7 @@ public class PaymentCongratsModel implements Parcelable {
         dest.writeParcelable(paymentCongratsResponse, flags);
     }
 
-    @NotNull
+    @NonNull
     public String getTitle() {
         return title;
     }
@@ -127,7 +126,7 @@ public class PaymentCongratsModel implements Parcelable {
         return subtitle;
     }
 
-    @NotNull
+    @NonNull
     public String getImageUrl() {
         return imageUrl;
     }
@@ -187,7 +186,7 @@ public class PaymentCongratsModel implements Parcelable {
         return importantFragment;
     }
 
-    @NotNull
+    @NonNull
     public PaymentCongratsCurrency getCurrency() {
         return currency;
     }
