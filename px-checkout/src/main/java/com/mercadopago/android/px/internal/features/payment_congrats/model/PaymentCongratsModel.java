@@ -137,7 +137,7 @@ public class PaymentCongratsModel implements Parcelable {
         return help;
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     public String getReceiptId() {
         return receiptId;
     }
