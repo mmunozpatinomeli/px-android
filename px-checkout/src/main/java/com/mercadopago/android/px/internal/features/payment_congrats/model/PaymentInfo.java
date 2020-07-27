@@ -50,6 +50,26 @@ public class PaymentInfo implements Parcelable {
         dest.writeString(this.paymentMethodId);
     }
 
+    @NonNull
+    public String getRawAmount() {
+        return rawAmount;
+    }
+
+    @NonNull
+    public String getPaymentMethodName() {
+        return paymentMethodName;
+    }
+
+    @Nullable
+    public String getLastFourDigits() {
+        return lastFourDigits;
+    }
+
+    @NonNull
+    public String getPaymentMethodId() {
+        return paymentMethodId;
+    }
+
     public static class Builder {
         /* default */ String rawAmount;
         /* default */ String paymentMethodName;
