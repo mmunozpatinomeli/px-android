@@ -2,6 +2,8 @@ package com.mercadopago.android.px.internal.features.business_result;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponse;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponseMapper;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
 import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.view.PaymentResultMethod;
@@ -28,6 +30,8 @@ public class BusinessPaymentResultMapper extends Mapper<BusinessPaymentModel, Bu
     private PaymentResultBody.Model getBodyModel(@NonNull final BusinessPaymentModel model) {
         final BusinessPayment payment = model.getPayment();
         final List<PaymentResultMethod.Model> methodModels = new ArrayList<>();
+        final PaymentCongratsResponse paymentCongratsResponse = new CongratsResponseMapper()
+            .map(model.getCongratsResponse());
         if (payment.shouldShowPaymentMethod()) {
             for (final PaymentData paymentData : model.getPaymentResult().getPaymentDataList()) {
                 methodModels.add(PaymentResultMethod.Model.with(paymentData, model.getCurrency(),
@@ -38,8 +42,8 @@ public class BusinessPaymentResultMapper extends Mapper<BusinessPaymentModel, Bu
         final PaymentResultType type = PaymentResultType.from(payment.getDecorator());
         return new PaymentResultBody.Model.Builder()
             .setMethodModels(methodModels)
-            .setCongratsViewModel(new CongratsResponseMapper(new BusinessPaymentResultTracker())
-                .map(model.getCongratsResponse()))
+            .setCongratsViewModel(new PaymentCongratsResponseMapper(new BusinessPaymentResultTracker())
+                .map(paymentCongratsResponse))
             .setReceiptId((type == PaymentResultType.APPROVED && payment.shouldShowReceipt()) ? payment.getReceipt() : null)
             .setHelp(payment.getHelp())
             .setStatement(payment.getStatementDescription())

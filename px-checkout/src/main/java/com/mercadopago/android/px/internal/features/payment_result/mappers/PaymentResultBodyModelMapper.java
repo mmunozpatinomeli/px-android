@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultTracker;
 import com.mercadopago.android.px.internal.features.business_result.CongratsResponseMapper;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponse;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponseMapper;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
 import com.mercadopago.android.px.internal.view.PaymentResultMethod;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
@@ -25,14 +27,16 @@ public class PaymentResultBodyModelMapper extends Mapper<PaymentModel, PaymentRe
     public PaymentResultBody.Model map(@NonNull final PaymentModel model) {
         final PaymentResult paymentResult = model.getPaymentResult();
         final List<PaymentResultMethod.Model> methodModels = new ArrayList<>();
+        final PaymentCongratsResponse paymentCongratsResponse = new CongratsResponseMapper()
+            .map(model.getCongratsResponse());
         for (final PaymentData paymentData : paymentResult.getPaymentDataList()) {
             methodModels.add(PaymentResultMethod.Model.with(paymentData, model.getCurrency()));
         }
 
         return new PaymentResultBody.Model.Builder()
             .setMethodModels(methodModels)
-            .setCongratsViewModel(new CongratsResponseMapper(new BusinessPaymentResultTracker())
-                .map(model.getCongratsResponse()))
+            .setCongratsViewModel(new PaymentCongratsResponseMapper(new BusinessPaymentResultTracker())
+                .map(paymentCongratsResponse))
             .setReceiptId(String.valueOf(paymentResult.getPaymentId()))
             .setTopFragment(configuration.getTopFragment())
             .setBottomFragment(configuration.getBottomFragment())
