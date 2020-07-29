@@ -40,19 +40,16 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, CongratsVie
 
     @Override
     public CongratsViewModel map(@NonNull final CongratsResponse congratsResponse) {
-
         return getCongratsViewModel(new PaymentCongratsResponseMapper()
             .map(congratsResponse));
     }
 
     public CongratsViewModel map(@NonNull final PaymentCongratsResponse paymentCongratsResponse) {
-        
         return getCongratsViewModel(paymentCongratsResponse);
     }
 
     private CongratsViewModel getCongratsViewModel(@NonNull final PaymentCongratsResponse paymentCongratsResponse) {
         final PaymentCongratsResponse.Discount discount = paymentCongratsResponse.getDiscount();
-
         return new CongratsViewModel(getLoyaltyData(paymentCongratsResponse.getScore()),
             getDiscountBoxData(discount), getShowAllDiscount(discount),
             getDownloadAppData(discount),
