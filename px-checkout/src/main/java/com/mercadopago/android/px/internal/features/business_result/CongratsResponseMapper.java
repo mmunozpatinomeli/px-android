@@ -12,10 +12,12 @@ import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusine
 import com.mercadolibre.android.mlbusinesscomponents.components.touchpoint.domain.model.AdditionalEdgeInsets;
 import com.mercadolibre.android.mlbusinesscomponents.components.touchpoint.domain.response.MLBusinessTouchpointResponse;
 import com.mercadolibre.android.mlbusinesscomponents.components.touchpoint.tracking.MLBusinessTouchpointTracker;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponse;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponseMapper;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper;
-import com.mercadopago.android.px.model.internal.Action;
 import com.mercadopago.android.px.model.internal.CongratsResponse;
+import com.mercadopago.android.px.model.internal.Text;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -38,23 +40,37 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, CongratsVie
 
     @Override
     public CongratsViewModel map(@NonNull final CongratsResponse congratsResponse) {
-        final CongratsResponse.Discount discount = congratsResponse.getDiscount();
-        return new CongratsViewModel(getLoyaltyData(congratsResponse.getScore()),
-            getDiscountBoxData(discount), getShowAllDiscount(discount), getDownloadAppData(discount),
-            getMoneySplitData(congratsResponse.getMoneySplit()),
-            getCrossSellingBoxData(congratsResponse.getCrossSellings()), congratsResponse.getTopTextBox(),
-            congratsResponse.getViewReceipt(), congratsResponse.hasCustomOrder());
+
+        return getCongratsViewModel(new PaymentCongratsResponseMapper()
+            .map(congratsResponse));
+    }
+
+    public CongratsViewModel map(@NonNull final PaymentCongratsResponse paymentCongratsResponse) {
+        
+        return getCongratsViewModel(paymentCongratsResponse);
+    }
+
+    private CongratsViewModel getCongratsViewModel(@NonNull final PaymentCongratsResponse paymentCongratsResponse) {
+        final PaymentCongratsResponse.Discount discount = paymentCongratsResponse.getDiscount();
+
+        return new CongratsViewModel(getLoyaltyData(paymentCongratsResponse.getScore()),
+            getDiscountBoxData(discount), getShowAllDiscount(discount),
+            getDownloadAppData(discount),
+            getMoneySplitData(paymentCongratsResponse.getMoneySplit()),
+            getCrossSellingBoxData(paymentCongratsResponse.getCrossSellings()),
+            Text.EMPTY,
+            paymentCongratsResponse.getViewReceipt(), paymentCongratsResponse.hasCustomOrder());
     }
 
     @Nullable
-    private MLBusinessLoyaltyRingData getLoyaltyData(@Nullable final CongratsResponse.Score score) {
+    private MLBusinessLoyaltyRingData getLoyaltyData(@Nullable final PaymentCongratsResponse.Score score) {
 
         if (score == null) {
             return null;
         }
 
-        final CongratsResponse.Score.Progress progress = score.getProgress();
-        final Action action = score.getAction();
+        final PaymentCongratsResponse.Score.Progress progress = score.getProgress();
+        final PaymentCongratsResponse.Action action = score.getAction();
 
         return new MLBusinessLoyaltyRingData() {
             @Override
@@ -90,7 +106,7 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, CongratsVie
     }
 
     @Nullable
-    private PXDiscountBoxData getDiscountBoxData(@Nullable final CongratsResponse.Discount discount) {
+    private PXDiscountBoxData getDiscountBoxData(@Nullable final PaymentCongratsResponse.Discount discount) {
 
         if (discount == null) {
             return null;
@@ -153,11 +169,11 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, CongratsVie
     }
 
     @NonNull
-    private List<MLBusinessSingleItem> getDisCountItems(@NonNull List<CongratsResponse.Discount.Item> items) {
+    private List<MLBusinessSingleItem> getDisCountItems(@NonNull List<PaymentCongratsResponse.Discount.Item> items) {
 
         final List<MLBusinessSingleItem> singleItems = new LinkedList<>();
 
-        for (final CongratsResponse.Discount.Item item : items) {
+        for (final PaymentCongratsResponse.Discount.Item item : items) {
             singleItems.add(new MLBusinessSingleItem() {
                 @Override
                 public String getImageUrl() {
@@ -201,7 +217,7 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, CongratsVie
 
     @Nullable
         /* default */ MLBusinessTouchpointResponse mapTouchpoint(
-        @Nullable final CongratsResponse.PXBusinessTouchpoint touchpoint) {
+        @Nullable final PaymentCongratsResponse.PXBusinessTouchpoint touchpoint) {
         if (touchpoint == null) {
             return null;
         }
@@ -210,7 +226,7 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, CongratsVie
         touchpointResponse.type = touchpoint.getType();
         touchpointResponse.content = JsonUtil.getGson().toJsonTree(touchpoint.getContent());
         if (touchpoint.getAdditionalEdgeInsets() != null) {
-            final CongratsResponse.AdditionalEdgeInsets insets = touchpoint.getAdditionalEdgeInsets();
+            final PaymentCongratsResponse.AdditionalEdgeInsets insets = touchpoint.getAdditionalEdgeInsets();
             touchpointResponse.additionalEdgeInsets = new AdditionalEdgeInsets(
                 insets.getTop(), insets.getLeft(), insets.getBottom(), insets.getRight());
         }
@@ -223,8 +239,8 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, CongratsVie
     }
 
     @Nullable
-    private Action getShowAllDiscount(@Nullable final CongratsResponse.Discount discount) {
-        final Action showAllDiscount;
+    private PaymentCongratsResponse.Action getShowAllDiscount(@Nullable final PaymentCongratsResponse.Discount discount) {
+        final PaymentCongratsResponse.Action showAllDiscount;
         if (discount == null || (showAllDiscount = discount.getAction()) == null) {
             return null;
         }
@@ -233,8 +249,8 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, CongratsVie
     }
 
     @Nullable
-    private MLBusinessDownloadAppData getDownloadAppData(@Nullable final CongratsResponse.Discount discount) {
-        final CongratsResponse.Discount.DownloadApp downloadApp;
+    private MLBusinessDownloadAppData getDownloadAppData(@Nullable final PaymentCongratsResponse.Discount discount) {
+        final PaymentCongratsResponse.Discount.DownloadApp downloadApp;
         if (discount == null || (downloadApp = discount.getActionDownload()) == null) {
             return null;
         }
@@ -270,13 +286,13 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, CongratsVie
 
     @NonNull
     private List<MLBusinessCrossSellingBoxData> getCrossSellingBoxData(
-        List<CongratsResponse.CrossSelling> crossSellingList) {
+        List<PaymentCongratsResponse.CrossSelling> crossSellingList) {
 
         final List<MLBusinessCrossSellingBoxData> crossSellingBoxData = new LinkedList<>();
 
-        for (CongratsResponse.CrossSelling crossSellingItem : crossSellingList) {
+        for (PaymentCongratsResponse.CrossSelling crossSellingItem : crossSellingList) {
 
-            Action action = crossSellingItem.getAction();
+            PaymentCongratsResponse.Action action = crossSellingItem.getAction();
             crossSellingBoxData.add(new MLBusinessCrossSellingBoxData() {
                 @NonNull
                 @Override
@@ -308,7 +324,7 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, CongratsVie
     }
 
     @Nullable
-    private MLBusinessActionCardViewData getMoneySplitData(@Nullable final CongratsResponse.MoneySplit moneySplit) {
+    private MLBusinessActionCardViewData getMoneySplitData(@Nullable final PaymentCongratsResponse.MoneySplit moneySplit) {
         return MLBusinessMapper.map(moneySplit);
     }
 }

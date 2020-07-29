@@ -26,6 +26,7 @@ import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.business_result.CongratsViewModel;
 import com.mercadopago.android.px.internal.features.business_result.PXDiscountBoxData;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponse;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
@@ -114,7 +115,7 @@ public final class PaymentResultBody extends LinearLayout {
         }
     }
 
-    private void renderShowAllDiscounts(@Nullable final Action showAllDiscountAction,
+    private void renderShowAllDiscounts(@Nullable final PaymentCongratsResponse.Action showAllDiscountAction,
         @NonNull final Listener onClickDiscountBox) {
         final MeliButton showAllDiscounts = findViewById(R.id.showAllDiscounts);
 
@@ -228,7 +229,7 @@ public final class PaymentResultBody extends LinearLayout {
         }
     }
 
-    private void renderViewReceipt(@Nullable final Action viewReceiptAction, final Listener listener) {
+    private void renderViewReceipt(@Nullable final PaymentCongratsResponse.Action viewReceiptAction, final Listener listener) {
         final MeliButton viewReceiptButton = findViewById(R.id.view_receipt_action);
         final String target = viewReceiptAction != null ? viewReceiptAction.getTarget() : null;
         if (TextUtil.isNotEmpty(target) && isMPInstalled(getContext().getPackageManager())) {
