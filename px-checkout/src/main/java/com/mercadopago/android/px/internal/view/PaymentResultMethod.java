@@ -9,6 +9,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsCurrency;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentInfo;
 import com.mercadopago.android.px.internal.util.PaymentDataHelper;
 import com.mercadopago.android.px.internal.util.ResourceUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -95,29 +97,63 @@ public class PaymentResultMethod extends ConstraintLayout {
     public static final class Model {
 
         public static Model with(@NonNull final PaymentData paymentData, @NonNull final Currency currency) {
-            return with(paymentData, currency, null);
-        }
 
-        public static Model with(@NonNull final PaymentData paymentData, @NonNull final Currency currency,
-            @Nullable final String statement) {
-
-            final PaymentResultAmount.Model amountModel = new PaymentResultAmount.Model.Builder(
-                PaymentDataHelper.getPrettyAmountToPay(paymentData), paymentData.getRawAmount(), currency)
-                .setPayerCost(paymentData.getPayerCost())
-                .setDiscount(paymentData.getDiscount())
+            PaymentInfo paymentInfo = new PaymentInfo.Builder()
+                .withLastFourDigits(paymentData.getToken().getLastFourDigits())
+                .withPaymentMethodId(paymentData.getPaymentMethod().getId())
+                .withPaymentMethodName(paymentData.getPaymentMethod().getName())
+                .withRawAmount(paymentData.getRawAmount())
                 .build();
 
-            final PaymentMethod paymentMethod = paymentData.getPaymentMethod();
+            return with(paymentInfo, currency, null);
+        }
+
+        public static Model with(@NonNull final PaymentInfo paymentInfo, @NonNull final Currency currency,
+            @Nullable final String statement) {
+
+            //getPrettyAmountToPay CALCULA CUANTO SE PAGÓ DE VERDAD
+            final PaymentResultAmount.Model amountModel = new PaymentResultAmount.Model.Builder(
+                PaymentDataHelper.getPrettyAmountToPay(paymentInfo), paymentInfo.getRawAmount(), currency)
+                .setPayerCost(paymentInfo.getPayerCost())
+                .setDiscount(paymentInfo.getDiscount())
+                .build();
+
+            final PaymentMethod paymentMethod = paymentInfo.getPaymentMethod();
             final Text description =
                 paymentMethod.getDisplayInfo() != null ? paymentMethod.getDisplayInfo().getDescription() : Text.EMPTY;
             return new Builder(paymentMethod.getId(), paymentMethod.getName(), description,
                 paymentMethod.getPaymentTypeId())
-                .setLastFourDigits(paymentData.getToken() != null ? paymentData.getToken().getLastFourDigits() : null)
+                .setLastFourDigits(paymentInfo.getToken() != null ? paymentInfo.getToken().getLastFourDigits() : null)
                 .setStatement(statement)
                 .setAmountModel(amountModel)
                 .setInfo(paymentMethod.getDisplayInfo() != null ? paymentMethod.getDisplayInfo().getResultInfo() : null)
                 .build();
         }
+
+//        public static Model with(@NonNull final PaymentInfo paymentInfo, @NonNull final Currency currency,
+//            @Nullable final String statement) {
+//
+//
+//            //TODO MECHI hablar con nik este amountModel
+//            final PaymentResultAmount.Model amountModel = new PaymentResultAmount.Model.Builder(
+//                PaymentDataHelper.getPrettyAmountToPay(paymentInfo), paymentInfo.getRawAmount(), currency)
+////                .setPayerCost(paymentInfo.getPayerCost())
+////                .setDiscount(paymentInfo.getDiscount())
+//                .build();
+//
+////            final PaymentMethod paymentMethod = paymentInfo.getPaymentMethod();
+////            final Text description =
+////                paymentMethod.getDisplayInfo() != null ? paymentMethod.getDisplayInfo().getDescription() : Text.EMPTY;
+//            //TODO MECHI completar el description del paymentMethod
+//            return new Builder(paymentInfo.getPaymentMethodId(), paymentInfo.getPaymentMethodName(), Text.EMPTY,
+//                "")
+//                .setLastFourDigits(paymentInfo.getLastFourDigits() != null ? paymentInfo.getLastFourDigits() : null)
+//                .setStatement(statement)
+//                .setAmountModel(amountModel)
+//                //TODO MECHI completar el info!
+//                .setInfo(null)
+//                .build();
+//        }
 
         @NonNull /* default */ final String paymentMethodId;
         @NonNull /* default */ final String paymentMethodName;

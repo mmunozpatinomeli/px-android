@@ -25,6 +25,9 @@ import com.mercadopago.android.px.internal.features.SecurityCodeActivity
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment
+import com.mercadopago.android.px.internal.features.payment_congrats.PaymentCongrats
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModel
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentInfo
 import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity
 import com.mercadopago.android.px.internal.util.FragmentUtil
@@ -36,6 +39,7 @@ import com.mercadopago.android.px.model.PaymentRecovery
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker
 import com.mercadopago.android.px.tracking.internal.model.Reason
+import java.math.BigDecimal
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel as ButtonConfig
 
 class PayButtonFragment : Fragment(), PayButton.View, SecurityValidationHandler {
@@ -97,8 +101,27 @@ class PayButtonFragment : Fragment(), PayButton.View, SecurityValidationHandler 
             is UIResult.VisualProcessorResult -> PaymentProcessorActivity.start(this, REQ_CODE_PAYMENT_PROCESSOR)
             is UIError.ConnectionError -> showSnackBar(stateUI.error)
             is UIResult.PaymentResult -> PaymentResultActivity.start(this, REQ_CODE_CONGRATS, stateUI.model)
-            is UIResult.BusinessPaymentResult ->
-                BusinessPaymentResultActivity.start(this, REQ_CODE_CONGRATS, stateUI.model)
+            is UIResult.BusinessPaymentResult -> {
+//                BusinessPaymentResultActivity.start(this, REQ_CODE_CONGRATS, stateUI.model)
+//                stateUI.model.payment.importantFragment?.
+                var paymentList: ArrayList<PaymentInfo> = ArrayList()
+                paymentList.add(
+                        PaymentInfo.Builder()
+                                .withPaymentMethodId("account_money")
+                                .withPaymentMethodName("Money in Mercado Pago")
+                                .withRawAmount(BigDecimal(100))
+                                .build()
+                )
+                var congrats: PaymentCongratsModel = PaymentCongratsModel.Builder()
+                        .withCongratsType(PaymentCongratsModel.CongratsType.APPROVED)
+                        .withTitle("Congrats de la mechi")
+                        .withImageUrl("https://www.jqueryscript.net/images/Simplest-Responsive-jQuery-Image-Lightbox-Plugin-simple-lightbox.jpg")
+                        .withExitActionSecondary("Dale mechi!", 13)
+                        .withPaymentsInfo(paymentList)
+                        .build()
+
+                PaymentCongrats.show(congrats, activity, 13)
+            }
         }
     }
 

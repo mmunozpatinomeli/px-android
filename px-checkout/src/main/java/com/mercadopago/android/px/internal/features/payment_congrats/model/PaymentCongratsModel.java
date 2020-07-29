@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.ExternalFragment;
 import java.util.List;
@@ -44,7 +45,7 @@ public class PaymentCongratsModel implements Parcelable {
     @Nullable private final ExternalFragment topFragment;
     @Nullable private final ExternalFragment bottomFragment;
     @Nullable private final ExternalFragment importantFragment;
-    @NonNull private final PaymentCongratsCurrency currency;
+    @NonNull private final Currency currency;
     @Nullable private final PaymentCongratsResponse paymentCongratsResponse;
 
     /* default */ PaymentCongratsModel(final Builder builder) {
@@ -187,7 +188,7 @@ public class PaymentCongratsModel implements Parcelable {
     }
 
     @NonNull
-    public PaymentCongratsCurrency getCurrency() {
+    public Currency getCurrency() {
         return currency;
     }
 
@@ -268,7 +269,7 @@ public class PaymentCongratsModel implements Parcelable {
         /* default */ Character currencyDecimalSeparator = ',';
         /* default */ String currencySymbol = "$";
         /* default */ Character currencyThousandsSeparator = '.';
-        /* default */ PaymentCongratsCurrency currency;
+        /* default */ Currency currency;
         /* default */ PaymentCongratsResponse paymentCongratsResponse;
 
         // MLBusinessComponents
@@ -286,8 +287,7 @@ public class PaymentCongratsModel implements Parcelable {
             if (exitActionPrimary == null && exitActionSecondary == null) {
                 throw new IllegalStateException("At least one button should be provided for PaymentCongrats");
             }
-            currency = new PaymentCongratsCurrency(currencySymbol, currencyDecimalPlaces, currencyDecimalSeparator,
-                currencyThousandsSeparator);
+            currency = new Currency("", "", currencySymbol, currencyDecimalPlaces, currencyDecimalSeparator, currencyThousandsSeparator);
             paymentCongratsResponse =
                 new PaymentCongratsResponse(score, discount, moneySplit, crossSelling, viewReceipt,
                     customOrder);

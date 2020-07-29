@@ -5,6 +5,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModel;
 import com.mercadopago.android.px.model.BusinessPayment;
 
 public enum PaymentResultType {
@@ -45,6 +46,19 @@ public enum PaymentResultType {
             return REJECTED;
         default:
             throw new IllegalStateException("Invalid decorator");
+        }
+    }
+
+    public static PaymentResultType from(final PaymentCongratsModel.CongratsType congratsType) {
+        switch (congratsType) {
+        case PENDING:
+            return PENDING;
+        case APPROVED:
+            return APPROVED;
+        case REJECTED:
+            return REJECTED;
+        default:
+            throw new IllegalStateException("Invalid congratsType");
         }
     }
 }

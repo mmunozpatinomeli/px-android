@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.view;
+package com.mercadopago.android.px.internal.features.payment_congrats;
 
 import android.content.Context;
 import android.graphics.Paint;
@@ -9,13 +9,14 @@ import com.google.android.flexbox.FlexboxLayout;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
+import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.PayerCost;
 import java.math.BigDecimal;
 import java.util.Locale;
 
-public class PaymentResultAmount extends FlexboxLayout {
+public class PaymentCongratsResultAmount extends FlexboxLayout {
 
     private final MPTextView title;
     private final MPTextView detail;
@@ -23,15 +24,15 @@ public class PaymentResultAmount extends FlexboxLayout {
     private final MPTextView rawAmount;
     private final MPTextView discount;
 
-    public PaymentResultAmount(final Context context) {
+    public PaymentCongratsResultAmount(final Context context) {
         this(context, null);
     }
 
-    public PaymentResultAmount(final Context context, @Nullable final AttributeSet attrs) {
+    public PaymentCongratsResultAmount(final Context context, @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public PaymentResultAmount(final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
+    public PaymentCongratsResultAmount(final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflate(context, R.layout.px_payment_result_amount, this);
         title = findViewById(R.id.title);
@@ -48,7 +49,7 @@ public class PaymentResultAmount extends FlexboxLayout {
 
         final Discount discount = model.discount;
         if (discount != null) {
-            rawAmount.setText(getPrettyAmount(model.currency, model.rawAmount));
+            rawAmount.setText(model.rawAmount);
             rawAmount.setPaintFlags(rawAmount.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             this.discount.setText(discount.getName());
         } else {
@@ -98,11 +99,11 @@ public class PaymentResultAmount extends FlexboxLayout {
     }
 
     public static final class Model {
-        @NonNull /* default */ final BigDecimal amount; //TODO: diferencia entre raw y amount
-        @NonNull /* default */ final BigDecimal rawAmount; // ES EL TACHADO CUANDO HAY DESCUENTO
+        @NonNull /* default */ final BigDecimal amount;
+        @NonNull /* default */ final String rawAmount;
         @NonNull /* default */ final Currency currency;
-        @Nullable /* default */ final PayerCost payerCost; //validar el motivo de esto
-        @Nullable /* default */ final Discount discount; //se usa sólo el name
+        @Nullable /* default */ final PayerCost payerCost;
+        @Nullable /* default */ final Discount discount;
 
         /* default */ Model(@NonNull final Builder builder) {
             amount = builder.amount;
@@ -114,12 +115,12 @@ public class PaymentResultAmount extends FlexboxLayout {
 
         public static class Builder {
             @NonNull /* default */ BigDecimal amount;
-            @NonNull /* default */ BigDecimal rawAmount;
+            @NonNull /* default */ String rawAmount;
             @NonNull /* default */ Currency currency;
             @Nullable /* default */ PayerCost payerCost;
             @Nullable /* default */ Discount discount;
 
-            public Builder(@NonNull final BigDecimal amount, @NonNull final BigDecimal rawAmount,
+            public Builder(@NonNull final BigDecimal amount, @NonNull final String rawAmount,
                 @NonNull final Currency currency) {
                 this.amount = amount;
                 this.rawAmount = rawAmount;
