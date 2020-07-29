@@ -51,7 +51,6 @@ public class PaymentCongratsResponseMapper extends Mapper<PaymentCongratsRespons
             getDownloadAppData(discount),
             getMoneySplitData(paymentCongratsResponse.getMoneySplit()),
             getCrossSellingBoxData(paymentCongratsResponse.getCrossSellings()),
-            Text.EMPTY,
             paymentCongratsResponse.getViewReceipt(), paymentCongratsResponse.hasCustomOrder());
     }
 

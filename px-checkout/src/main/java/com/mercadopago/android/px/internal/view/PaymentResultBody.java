@@ -81,7 +81,6 @@ public final class PaymentResultBody extends LinearLayout {
 
     public void init(@NonNull final Model model, @NonNull final Listener listener) {
         initView(model);
-        renderTopTextBox(model.congratsViewModel.getTopTextBox());
         renderFragment(R.id.px_fragment_container_important, model.importantFragment);
         renderLoyalty(model.congratsViewModel.getLoyaltyRingData(), listener);
         renderDiscounts(model.congratsViewModel.getDiscountBoxData(), listener);
@@ -95,11 +94,6 @@ public final class PaymentResultBody extends LinearLayout {
         renderMethods(model);
         renderViewReceipt(model.congratsViewModel.getViewReceipt(), listener);
         renderFragment(R.id.px_fragment_container_bottom, model.bottomFragment);
-    }
-
-    private void renderTopTextBox(@NonNull final Text topTextBox) {
-        final boolean isVisible = ViewUtils.loadOrHide(View.GONE, topTextBox, findViewById(R.id.top_text_box));
-        findViewById(R.id.top_text_box_separator).setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     private void renderLoyalty(@Nullable final MLBusinessLoyaltyRingData loyaltyData,
