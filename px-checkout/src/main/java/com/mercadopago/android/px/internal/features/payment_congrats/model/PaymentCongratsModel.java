@@ -560,6 +560,10 @@ public class PaymentCongratsModel implements Parcelable {
             return this;
         }
 
+        /**
+         * @param customOrder allows to activate custom order
+         * @return builder with the added boolean
+         */
         /* default */ Builder withCustomOrder(final boolean customOrder) {
             this.customOrder = customOrder;
             return this;
