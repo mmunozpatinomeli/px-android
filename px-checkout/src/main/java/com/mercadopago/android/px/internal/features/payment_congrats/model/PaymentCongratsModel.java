@@ -559,5 +559,10 @@ public class PaymentCongratsModel implements Parcelable {
             this.viewReceipt = viewReceipt;
             return this;
         }
+
+        /* default */ Builder withCustomOrder(final boolean customOrder) {
+            this.customOrder = customOrder;
+            return this;
+        }
     }
 }
