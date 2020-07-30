@@ -22,12 +22,14 @@ public class PaymentInfo implements Parcelable {
     @NonNull public final String paymentMethodName;
     @Nullable public final String lastFourDigits;
     @NonNull public final String paymentMethodId;
+    @NonNull public final PaymentMethodType paymentMethodType;
 
     protected PaymentInfo(final Builder builder) {
         rawAmount = builder.rawAmount;
         paymentMethodName = builder.paymentMethodName;
         lastFourDigits = builder.lastFourDigits;
         paymentMethodId = builder.paymentMethodId;
+        paymentMethodType = builder.paymentMethodType;
     }
 
     protected PaymentInfo(final Parcel in) {
@@ -35,6 +37,7 @@ public class PaymentInfo implements Parcelable {
         paymentMethodName = in.readString();
         lastFourDigits = in.readString();
         paymentMethodId = in.readString();
+        paymentMethodType = PaymentMethodType.fromName(in.readString());
     }
 
     @Override
@@ -44,10 +47,42 @@ public class PaymentInfo implements Parcelable {
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeString(this.rawAmount);
-        dest.writeString(this.paymentMethodName);
-        dest.writeString(this.lastFourDigits);
-        dest.writeString(this.paymentMethodId);
+        dest.writeString(rawAmount);
+        dest.writeString(paymentMethodName);
+        dest.writeString(lastFourDigits);
+        dest.writeString(paymentMethodId);
+    }
+
+    public enum PaymentMethodType {
+        CREDIT_CARD("credit_card"),
+        DEBIT_CARD("debit_card"),
+        PREPAID_CARD("prepaid_card"),
+        TICKET("ticket"),
+        ATM("atm"),
+        DIGITAL_CURRENCY("digital_currency"),
+        BANK_TRANSFER("bank_transfer"),
+        ACCOUNT_MONEY("account_money"),
+        PLUGIN("payment_method_plugin");
+
+        public final String value;
+
+        PaymentMethodType(final String value) {
+            this.value = value;
+        }
+
+        public static PaymentMethodType fromName(final String text) {
+            for (final PaymentMethodType paymentMethodType : PaymentMethodType.values()) {
+                if (paymentMethodType.name().equalsIgnoreCase(text)) {
+                    return paymentMethodType;
+                }
+            }
+            throw new IllegalStateException("Invalid congratsType");
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
     }
 
     public static class Builder {
@@ -55,6 +90,7 @@ public class PaymentInfo implements Parcelable {
         /* default */ String paymentMethodName;
         /* default */ String lastFourDigits;
         /* default */ String paymentMethodId;
+        /* default */ PaymentMethodType paymentMethodType;
 
         /**
          * Instantiates a PaymentInfo object
@@ -106,6 +142,17 @@ public class PaymentInfo implements Parcelable {
          */
         public Builder withPaymentMethodId(final String paymentMethodId) {
             this.paymentMethodId = paymentMethodId;
+            return this;
+        }
+
+        /**
+         * Adds the type of the payment method used to pay
+         *
+         * @param paymentMethodType the type of payment method (account money, credit card, debit card, etc)
+         * @return Builder
+         */
+        public Builder withPaymentMethodType(final PaymentMethodType paymentMethodType) {
+            this.paymentMethodType = paymentMethodType;
             return this;
         }
     }
