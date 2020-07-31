@@ -1,314 +1,105 @@
 package com.mercadopago.android.px.internal.features.business_result;
 
 import android.support.annotation.NonNull;
-import com.mercadolibre.android.mlbusinesscomponents.common.MLBusinessSingleItem;
-import com.mercadolibre.android.mlbusinesscomponents.components.actioncard.MLBusinessActionCardViewData;
-import com.mercadolibre.android.mlbusinesscomponents.components.common.downloadapp.MLBusinessDownloadAppData;
-import com.mercadolibre.android.mlbusinesscomponents.components.common.downloadapp.MLBusinessDownloadAppView;
-import com.mercadolibre.android.mlbusinesscomponents.components.crossselling.MLBusinessCrossSellingBoxData;
-import com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusinessDiscountBoxData;
-import com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusinessDiscountTracker;
-import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingData;
-import com.mercadolibre.android.mlbusinesscomponents.components.touchpoint.domain.model.AdditionalEdgeInsets;
-import com.mercadolibre.android.mlbusinesscomponents.components.touchpoint.domain.response.MLBusinessTouchpointResponse;
-import com.mercadolibre.android.mlbusinesscomponents.components.touchpoint.tracking.MLBusinessTouchpointTracker;
-import com.mercadopago.android.px.internal.util.JsonUtil;
+import android.support.annotation.Nullable;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponse;
 import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper;
 import com.mercadopago.android.px.model.internal.Action;
 import com.mercadopago.android.px.model.internal.CongratsResponse;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
 
-public class CongratsResponseMapper extends Mapper<CongratsResponse, CongratsViewModel> {
+public class CongratsResponseMapper extends Mapper<CongratsResponse, PaymentCongratsResponse> {
 
-    /* default */ final BusinessPaymentResultTracker discountTracker;
-
-    /**
-     * Constructor
-     *
-     * @param discountTracker A {@link BusinessPaymentResultTracker}
-     */
-    public CongratsResponseMapper(final BusinessPaymentResultTracker discountTracker) {
-        this.discountTracker = discountTracker;
-    }
 
     @Override
-    public CongratsViewModel map(@NonNull final CongratsResponse congratsResponse) {
-        final CongratsResponse.Discount discount = congratsResponse.getDiscount();
-        return new CongratsViewModel(getLoyaltyData(congratsResponse.getScore()),
-            getDiscountBoxData(discount), getShowAllDiscount(discount), getDownloadAppData(discount),
-            getMoneySplitData(congratsResponse.getMoneySplit()),
-            getCrossSellingBoxData(congratsResponse.getCrossSellings()), congratsResponse.getTopTextBox(),
-            congratsResponse.getViewReceipt(), congratsResponse.hasCustomOrder());
+    public PaymentCongratsResponse map(CongratsResponse congratsResponse) {
+        return new PaymentCongratsResponse(getScore(congratsResponse.getScore()),
+            getDiscount(congratsResponse.getDiscount()), getMoneySplit(congratsResponse.getMoneySplit()),
+            getCrossSelling(congratsResponse.getCrossSellings()),
+            getAction(congratsResponse.getViewReceipt()), congratsResponse.hasCustomOrder());
+    }
+
+    private PaymentCongratsResponse.Score getScore(final CongratsResponse.Score score) {
+        if (score != null) {
+            return new PaymentCongratsResponse.Score(
+                new PaymentCongratsResponse.Score.Progress(score.getProgress().getPercentage(),
+                    score.getProgress().getColor(), score.getProgress().getLevel()), score.getTitle(),
+                getAction(score.getAction()));
+        }
+        return null;
+    }
+
+    private List<PaymentCongratsResponse.CrossSelling> getCrossSelling(
+        final Iterable<CongratsResponse.CrossSelling> crossSellings) {
+        final List<PaymentCongratsResponse.CrossSelling> crossSellingList = new ArrayList<>();
+        for (final CongratsResponse.CrossSelling crossSelling : crossSellings) {
+            crossSellingList
+                .add(new PaymentCongratsResponse.CrossSelling(crossSelling.getTitle(), crossSelling.getIcon(),
+                    getAction(crossSelling.getAction()), crossSelling.getContentId()));
+        }
+        return crossSellingList;
+    }
+
+    private PaymentCongratsResponse.Discount getDiscount(final CongratsResponse.Discount discount) {
+        if (discount != null) {
+            PaymentCongratsResponse.AdditionalEdgeInsets additionalEdgeInsets;
+            PaymentCongratsResponse.PXBusinessTouchpoint touchpoint;
+            if (discount.getTouchpoint() != null) {
+                additionalEdgeInsets =
+                    discount.getTouchpoint().getAdditionalEdgeInsets() == null ? null :
+                        new PaymentCongratsResponse.AdditionalEdgeInsets(
+                            discount.getTouchpoint().getAdditionalEdgeInsets().getTop(),
+                            discount.getTouchpoint().getAdditionalEdgeInsets().getLeft(),
+                            discount.getTouchpoint().getAdditionalEdgeInsets().getBottom(),
+                            discount.getTouchpoint().getAdditionalEdgeInsets().getRight());
+                touchpoint =
+                    new PaymentCongratsResponse.PXBusinessTouchpoint(discount.getTouchpoint().getId(),
+                        discount.getTouchpoint().getType(), discount.getTouchpoint().getContent(),
+                        discount.getTouchpoint().getTracking(), additionalEdgeInsets);
+            } else {
+                additionalEdgeInsets = null;
+                touchpoint = null;
+            }
+
+            return new PaymentCongratsResponse.Discount(discount.getTitle(), discount.getSubtitle(),
+                getAction(discount.getAction())
+                , new PaymentCongratsResponse.Discount.DownloadApp(discount.getActionDownload().getTitle(),
+                getAction(discount.getActionDownload().getAction())),
+                touchpoint, getDiscountItems(discount.getItems()));
+        }
+        return null;
     }
 
     @Nullable
-    private MLBusinessLoyaltyRingData getLoyaltyData(@Nullable final CongratsResponse.Score score) {
-
-        if (score == null) {
-            return null;
+    private PaymentCongratsResponse.MoneySplit getMoneySplit(@Nullable final CongratsResponse.MoneySplit moneySplit) {
+        if (moneySplit != null) {
+            return moneySplit == null ? null
+                : new PaymentCongratsResponse.MoneySplit(
+                    new PaymentCongratsResponse.Text(moneySplit.getTitle().getMessage(),
+                        moneySplit.getTitle().getBackgroundColor(), moneySplit.getTitle().getTextColor(),
+                        moneySplit.getTitle().getWeight()), getAction(moneySplit.getAction()),
+                    moneySplit.getImageUrl());
         }
-
-        final CongratsResponse.Score.Progress progress = score.getProgress();
-        final Action action = score.getAction();
-
-        return new MLBusinessLoyaltyRingData() {
-            @Override
-            public String getRingHexaColor() {
-                return progress.getColor();
-            }
-
-            @Override
-            public int getRingNumber() {
-                return progress.getLevel();
-            }
-
-            @Override
-            public float getRingPercentage() {
-                return progress.getPercentage();
-            }
-
-            @Override
-            public String getTitle() {
-                return score.getTitle();
-            }
-
-            @Override
-            public String getButtonTitle() {
-                return action.getLabel();
-            }
-
-            @Override
-            public String getButtonDeepLink() {
-                return action.getTarget();
-            }
-        };
-    }
-
-    @Nullable
-    private PXDiscountBoxData getDiscountBoxData(@Nullable final CongratsResponse.Discount discount) {
-
-        if (discount == null) {
-            return null;
-        }
-
-        return new PXDiscountBoxData() {
-            @Nullable
-            @Override
-            public String getTitle() {
-                return discount.getTitle();
-            }
-
-            @Nullable
-            @Override
-            public String getSubtitle() {
-                return discount.getSubtitle();
-            }
-
-            @Nullable
-            @Override
-            public MLBusinessTouchpointResponse getTouchpoint() {
-                return mapTouchpoint(discount.getTouchpoint());
-            }
-
-            @Nullable
-            @Override
-            public MLBusinessTouchpointTracker getTracker() {
-                return discountTracker;
-            }
-
-            @Override
-            public MLBusinessDiscountBoxData getDiscountBoxData() {
-                return new MLBusinessDiscountBoxData() {
-                    @Nullable
-                    @Override
-                    public String getTitle() {
-                        return discount.getTitle();
-                    }
-
-                    @Nullable
-                    @Override
-                    public String getSubtitle() {
-                        return discount.getSubtitle();
-                    }
-
-                    @NonNull
-                    @Override
-                    public List<MLBusinessSingleItem> getItems() {
-                        return getDisCountItems(discount.getItems());
-                    }
-
-                    @Nullable
-                    @Override
-                    public MLBusinessDiscountTracker getTracker() {
-                        return discountTracker;
-                    }
-                };
-            }
-        };
+        return null;
     }
 
     @NonNull
-    private List<MLBusinessSingleItem> getDisCountItems(@NonNull List<CongratsResponse.Discount.Item> items) {
+    private PaymentCongratsResponse.Action getAction(final Action action) {
+        if (action != null) {
+            return new PaymentCongratsResponse.Action(action.getLabel(), action.getTarget());
+        }
+        return null;
+    }
 
-        final List<MLBusinessSingleItem> singleItems = new LinkedList<>();
-
+    private List<PaymentCongratsResponse.Discount.Item> getDiscountItems(
+        final List<CongratsResponse.Discount.Item> items) {
+        final List<PaymentCongratsResponse.Discount.Item> discountItems = new ArrayList<>();
         for (final CongratsResponse.Discount.Item item : items) {
-            singleItems.add(new MLBusinessSingleItem() {
-                @Override
-                public String getImageUrl() {
-                    return item.getIcon();
-                }
-
-                @Override
-                public String getTitleLabel() {
-                    return item.getTitle();
-                }
-
-                @Override
-                public String getSubtitleLabel() {
-                    return item.getSubtitle();
-                }
-
-                @Nullable
-                @Override
-                public String getDeepLinkItem() {
-                    return item.getTarget();
-                }
-
-                @Nullable
-                @Override
-                public String getTrackId() {
-                    return item.getCampaignId();
-                }
-
-                @Nullable
-                @Override
-                public Map<String, Object> getEventData() {
-                    if (item.getCampaignId() != null && !item.getCampaignId().isEmpty()) {
-                        return new HashMap<>(Collections.singletonMap("tracking_id", item.getCampaignId()));
-                    }
-                    return null;
-                }
-            });
+            discountItems.add(
+                new PaymentCongratsResponse.Discount.Item(item.getTitle(), item.getSubtitle(), item.getIcon(),
+                    item.getTarget(), item.getCampaignId()));
         }
-        return singleItems;
-    }
-
-    @Nullable
-        /* default */ MLBusinessTouchpointResponse mapTouchpoint(
-        @Nullable final CongratsResponse.PXBusinessTouchpoint touchpoint) {
-        if (touchpoint == null) {
-            return null;
-        }
-        final MLBusinessTouchpointResponse touchpointResponse = new MLBusinessTouchpointResponse();
-        touchpointResponse.id = touchpoint.getId();
-        touchpointResponse.type = touchpoint.getType();
-        touchpointResponse.content = JsonUtil.getGson().toJsonTree(touchpoint.getContent());
-        if (touchpoint.getAdditionalEdgeInsets() != null) {
-            final CongratsResponse.AdditionalEdgeInsets insets = touchpoint.getAdditionalEdgeInsets();
-            touchpointResponse.additionalEdgeInsets = new AdditionalEdgeInsets(
-                insets.getTop(), insets.getLeft(), insets.getBottom(), insets.getRight());
-        }
-        try {
-            touchpointResponse.tracking = touchpoint.getTracking();
-        } catch (final ClassCastException e) {
-            //no-op
-        }
-        return touchpointResponse;
-    }
-
-    @Nullable
-    private Action getShowAllDiscount(@Nullable final CongratsResponse.Discount discount) {
-        final Action showAllDiscount;
-        if (discount == null || (showAllDiscount = discount.getAction()) == null) {
-            return null;
-        }
-
-        return showAllDiscount;
-    }
-
-    @Nullable
-    private MLBusinessDownloadAppData getDownloadAppData(@Nullable final CongratsResponse.Discount discount) {
-        final CongratsResponse.Discount.DownloadApp downloadApp;
-        if (discount == null || (downloadApp = discount.getActionDownload()) == null) {
-            return null;
-        }
-
-        return new MLBusinessDownloadAppData() {
-            @NonNull
-            @Override
-            public MLBusinessDownloadAppView.AppSite getAppSite() {
-
-                //TODO: Logica para saber en que app estoy.
-                return MLBusinessDownloadAppView.AppSite.MP;
-            }
-
-            @NonNull
-            @Override
-            public String getTitle() {
-                return downloadApp.getTitle();
-            }
-
-            @NonNull
-            @Override
-            public String getButtonTitle() {
-                return downloadApp.getAction().getLabel();
-            }
-
-            @NonNull
-            @Override
-            public String getButtonDeepLink() {
-                return downloadApp.getAction().getTarget();
-            }
-        };
-    }
-
-    @NonNull
-    private List<MLBusinessCrossSellingBoxData> getCrossSellingBoxData(
-        List<CongratsResponse.CrossSelling> crossSellingList) {
-
-        final List<MLBusinessCrossSellingBoxData> crossSellingBoxData = new LinkedList<>();
-
-        for (CongratsResponse.CrossSelling crossSellingItem : crossSellingList) {
-
-            Action action = crossSellingItem.getAction();
-            crossSellingBoxData.add(new MLBusinessCrossSellingBoxData() {
-                @NonNull
-                @Override
-                public String getIconUrl() {
-                    return crossSellingItem.getIcon();
-                }
-
-                @NonNull
-                @Override
-                public String getText() {
-                    return crossSellingItem.getTitle();
-                }
-
-                @NonNull
-                @Override
-                public String getButtonTitle() {
-                    return action.getLabel();
-                }
-
-                @NonNull
-                @Override
-                public String getButtonDeepLink() {
-                    return action.getTarget();
-                }
-            });
-        }
-
-        return crossSellingBoxData;
-    }
-
-    @Nullable
-    private MLBusinessActionCardViewData getMoneySplitData(@Nullable final CongratsResponse.MoneySplit moneySplit) {
-        return MLBusinessMapper.map(moneySplit);
+        return discountItems;
     }
 }
