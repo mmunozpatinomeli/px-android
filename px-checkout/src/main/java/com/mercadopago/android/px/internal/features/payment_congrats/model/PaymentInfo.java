@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import java.math.BigDecimal;
+import org.jetbrains.annotations.NotNull;
 
 public class PaymentInfo implements Parcelable {
 
@@ -19,7 +20,7 @@ public class PaymentInfo implements Parcelable {
             return new PaymentInfo[size];
         }
     };
-    @NonNull public final String rawAmount;
+    @NonNull public final BigDecimal rawAmount;
     @NonNull public final String paymentMethodName;
     @Nullable public final String lastFourDigits;
     @NonNull public final String paymentMethodId;
@@ -34,7 +35,7 @@ public class PaymentInfo implements Parcelable {
     }
 
     protected PaymentInfo(final Parcel in) {
-        rawAmount = in.readString();
+        rawAmount = BigDecimal.valueOf( in.readDouble());
         paymentMethodName = in.readString();
         lastFourDigits = in.readString();
         paymentMethodId = in.readString();
@@ -48,7 +49,7 @@ public class PaymentInfo implements Parcelable {
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeString(rawAmount);
+        dest.writeDouble(rawAmount.doubleValue());
         dest.writeString(paymentMethodName);
         dest.writeString(lastFourDigits);
         dest.writeString(paymentMethodId);
@@ -77,9 +78,10 @@ public class PaymentInfo implements Parcelable {
                     return paymentMethodType;
                 }
             }
-            throw new IllegalStateException("Invalid congratsType");
+            throw new IllegalStateException("Invalid paymentMethodType");
         }
 
+        @NotNull
         @Override
         public String toString() {
             return value;
@@ -107,7 +109,7 @@ public class PaymentInfo implements Parcelable {
     }
 
     public static class Builder {
-        /* default */ String rawAmount;
+        /* default */ BigDecimal rawAmount;
         /* default */ String paymentMethodName;
         /* default */ String lastFourDigits;
         /* default */ String paymentMethodId;
@@ -139,7 +141,7 @@ public class PaymentInfo implements Parcelable {
          * @param rawAmount the value of the raw Amount for the payment
          * @return Builder
          */
-        public Builder withRawAmount(final String rawAmount) {
+        public Builder withRawAmount(final BigDecimal rawAmount) {
             this.rawAmount = rawAmount;
             return this;
         }

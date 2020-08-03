@@ -99,34 +99,33 @@ public class PaymentResultMethod extends ConstraintLayout {
         public static Model with(@NonNull final PaymentData paymentData, @NonNull final Currency currency) {
 
             PaymentInfo paymentInfo = new PaymentInfo.Builder()
-                .withLastFourDigits(paymentData.getToken().getLastFourDigits())
+                .withLastFourDigits(paymentData.getToken() != null ? paymentData.getToken().getLastFourDigits() : null)
                 .withPaymentMethodId(paymentData.getPaymentMethod().getId())
                 .withPaymentMethodName(paymentData.getPaymentMethod().getName())
                 .withRawAmount(paymentData.getRawAmount())
                 .build();
 
-            return with(paymentInfo, currency, null);
+            return with(paymentInfo, null);
         }
 
-        public static Model with(@NonNull final PaymentInfo paymentInfo, @NonNull final Currency currency,
-            @Nullable final String statement) {
+        public static Model with(@NonNull final PaymentInfo paymentInfo, @Nullable final String statement) {
 
             //getPrettyAmountToPay CALCULA CUANTO SE PAGÓ DE VERDAD
-            final PaymentResultAmount.Model amountModel = new PaymentResultAmount.Model.Builder(
-                PaymentDataHelper.getPrettyAmountToPay(paymentInfo), paymentInfo.getRawAmount(), currency)
-                .setPayerCost(paymentInfo.getPayerCost())
-                .setDiscount(paymentInfo.getDiscount())
-                .build();
+//            final PaymentResultAmount.Model amountModel = new PaymentResultAmount.Model.Builder(
+//                PaymentDataHelper.getPrettyAmountToPay(paymentInfo), paymentInfo.getRawAmount(), currency)
+//                .setPayerCost(paymentInfo.getPayerCost())
+//                .setDiscount(paymentInfo.getDiscount())
+//                .build();
 
-            final PaymentMethod paymentMethod = paymentInfo.getPaymentMethod();
-            final Text description =
-                paymentMethod.getDisplayInfo() != null ? paymentMethod.getDisplayInfo().getDescription() : Text.EMPTY;
-            return new Builder(paymentMethod.getId(), paymentMethod.getName(), description,
-                paymentMethod.getPaymentTypeId())
-                .setLastFourDigits(paymentInfo.getToken() != null ? paymentInfo.getToken().getLastFourDigits() : null)
+//            final PaymentMethod paymentMethod = paymentInfo.getPaymentMethod();
+//            final Text description =
+//                paymentMethod.getDisplayInfo() != null ? paymentMethod.getDisplayInfo().getDescription() : Text.EMPTY;
+            return new Builder(paymentInfo.getPaymentMethodId(), paymentInfo.getPaymentMethodName(), Text.EMPTY,
+                "account_money")
+                .setLastFourDigits(paymentInfo.getLastFourDigits())
                 .setStatement(statement)
-                .setAmountModel(amountModel)
-                .setInfo(paymentMethod.getDisplayInfo() != null ? paymentMethod.getDisplayInfo().getResultInfo() : null)
+//                .setAmountModel(amountModel)
+//                .setInfo(paymentInfo.getDisplayInfo() != null ? paymentMethod.getDisplayInfo().getResultInfo() : null)
                 .build();
         }
 
