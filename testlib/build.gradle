@@ -6,6 +6,11 @@ android {
     lintOptions {
         abortOnError false
     }
+    buildTypes {
+        debugBeta {
+            initWith debug
+        }
+    }
 }
 
 spoon {

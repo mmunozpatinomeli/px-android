@@ -6,7 +6,7 @@ import android.view.View
 
 internal fun CharSequence?.isNotNullNorEmpty() = !isNullOrEmpty()
 
-internal fun CharSequence?.orIfEmpty(fallback: String) = if (isNotNullNorEmpty()) this!! else fallback
+internal fun <T : CharSequence>T?.orIfEmpty(fallback: T) = if (isNotNullNorEmpty()) this!! else fallback
 
 internal fun View.gone() = apply { visibility = View.GONE }
 

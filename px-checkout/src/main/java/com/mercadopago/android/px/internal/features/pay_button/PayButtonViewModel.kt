@@ -30,6 +30,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError
 import com.mercadopago.android.px.model.exceptions.NoConnectivityException
 import com.mercadopago.android.px.model.internal.PaymentConfiguration
 import com.mercadopago.android.px.internal.model.SecurityType
+import com.mercadopago.android.px.internal.repository.CustomTextsRepository
 import com.mercadopago.android.px.tracking.internal.events.BiometricsFrictionTracker
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker
@@ -42,11 +43,11 @@ internal class PayButtonViewModel(
     private val paymentService: PaymentRepository,
     private val productIdProvider: ProductIdProvider,
     private val connectionHelper: ConnectionHelper,
-    private val paymentSettingRepository: PaymentSettingRepository) : BaseViewModel(), PayButton.ViewModel {
+    private val paymentSettingRepository: PaymentSettingRepository,
+    customTextsRepository: CustomTextsRepository) : BaseViewModel(), PayButton.ViewModel {
 
     val buttonTextLiveData = MutableLiveData<ButtonConfig>()
-    private var buttonConfig: ButtonConfig = PayButtonViewModelMapper().map(
-        paymentSettingRepository.advancedConfiguration.customStringConfiguration)
+    private var buttonConfig: ButtonConfig = PayButtonViewModelMapper().map(customTextsRepository.customTexts)
 
     init {
         buttonTextLiveData.value = buttonConfig
@@ -60,7 +61,7 @@ internal class PayButtonViewModel(
     val cvvRequiredLiveData = MediatorLiveData<Pair<Card, Reason>?>()
     val recoverRequiredLiveData = MediatorLiveData<PaymentRecovery?>()
     val stateUILiveData = MediatorLiveData<PayButtonState>()
-    var observingService = false
+    private var observingService = false
 
     private fun <T : Event<X>, X : Any, I> transform(liveData: LiveData<T>, block: (content: X) -> I): LiveData<I?> {
         return map(liveData) { event ->

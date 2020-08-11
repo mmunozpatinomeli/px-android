@@ -24,6 +24,15 @@ class CheckoutConfigurationModule(context: Context) : ConfigurationModule(contex
             return internalChargeRepository!!
         }
 
+    private var internalCustomTextsRepository: CustomTextsRepository? = null
+    val customTextsRepository: CustomTextsRepository
+        get() {
+            if (internalCustomTextsRepository == null) {
+                internalCustomTextsRepository = CustomTextsRepositoryImpl(paymentSettings)
+            }
+            return internalCustomTextsRepository!!
+        }
+
     override fun reset() {
         super.reset()
         userSelectionRepository.reset()
@@ -32,5 +41,6 @@ class CheckoutConfigurationModule(context: Context) : ConfigurationModule(contex
         payerCostSelectionRepository.reset()
         payerComplianceRepository.reset()
         internalChargeRepository = null
+        internalCustomTextsRepository = null
     }
 }

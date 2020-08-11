@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
+import com.mercadopago.android.px.internal.repository.CustomTextsRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.util.ChargeRuleHelper;
 import com.mercadopago.android.px.internal.view.AmountDescriptorView;
@@ -34,13 +35,15 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressPaymentMethod
     @NonNull private final SummaryInfo summaryInfo;
     @NonNull private final ChargeRepository chargeRepository;
     @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
+    @NonNull private final CustomTextsRepository customTextsRepository;
 
     public SummaryViewModelMapper(@NonNull final Currency currency,
         @NonNull final DiscountRepository discountRepository, @NonNull final AmountRepository amountRepository,
         @NonNull final ElementDescriptorView.Model elementDescriptorModel,
         @NonNull final AmountDescriptorView.OnClickListener listener,
         @NonNull final SummaryInfo summaryInfo, @NonNull final ChargeRepository chargeRepository,
-        @NonNull final AmountConfigurationRepository amountConfigurationRepository) {
+        @NonNull final AmountConfigurationRepository amountConfigurationRepository,
+        @NonNull final CustomTextsRepository customTextsRepository) {
         this.currency = currency;
         this.discountRepository = discountRepository;
         this.amountRepository = amountRepository;
@@ -49,6 +52,7 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressPaymentMethod
         this.summaryInfo = summaryInfo;
         this.chargeRepository = chargeRepository;
         this.amountConfigurationRepository = amountConfigurationRepository;
+        this.customTextsRepository = customTextsRepository;
     }
 
     @Override
@@ -85,7 +89,7 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressPaymentMethod
                 chargeRule, amountConfiguration).create();
 
         final AmountDescriptorView.Model totalRow = new AmountDescriptorView.Model(
-            new TotalLocalized(),
+            new TotalLocalized(customTextsRepository),
             new AmountLocalized(amountRepository.getAmountToPay(paymentTypeId, discountModel), currency),
             new SummaryViewDefaultColor());
 

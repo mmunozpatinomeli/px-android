@@ -122,15 +122,15 @@ install {
 bintray {
     user = "$System.env.BINTRAY_USER"
     key = "$System.env.BINTRAY_API_KEY"
-
+    def isProduction = project.hasProperty('production')
     override = true
 
     configurations = ['archives']
     pkg {
-        repo = project.hasProperty('production') ? 'android' : 'android-experimental'
+        repo = isProduction ? 'android-releases' : 'android-experimental'
         name = libraryName
         desc = libraryDescription
-        userOrg = 'mercadopago'
+        userOrg = isProduction ? 'mercadolibre' : 'mercadopago'
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ["Apache-2.0"]

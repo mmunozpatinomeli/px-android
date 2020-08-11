@@ -5,6 +5,14 @@ apply from: "$rootDir/gradle/deploy_addons.gradle"
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
+android {
+    buildTypes {
+        debugBeta {
+            initWith debug
+        }
+    }
+}
+
 dependencies {
     testImplementation "org.powermock:powermock-module-junit4:$power_mock"
     testImplementation "org.powermock:powermock-api-mockito2:$power_mock"

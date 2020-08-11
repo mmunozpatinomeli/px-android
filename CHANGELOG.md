@@ -1,3 +1,14 @@
+## VERSION 4.54.0
+_05_08_2020_
+* FEATURE - Added flowName configuration from preference
+* ENHANCEMENT - Configure tracking params in checkout builder
+* ENHANCEMENT - Added payment method information in result view track
+* ENHANCEMENT - Changed deploy script
+
+## VERSION 4.53.1
+_03_08_2020_
+* FIX - Added keep rules for renderer's contructor in R8 fullmode
+
 ## VERSION 4.53.0
 _30_07_2020_
 * ENHANCEMENT - Deprecated old groups' api

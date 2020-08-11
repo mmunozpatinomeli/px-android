@@ -37,6 +37,10 @@ android {
             signingConfig signingConfigs.debug
         }
 
+        debugBeta {
+            initWith debug
+        }
+
         release {
             debuggable true
             minifyEnabled true
@@ -71,6 +75,7 @@ dependencies {
 
     implementation "com.android.support.constraint:constraint-layout:$constraint_layout"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_cannary"
+    debugBetaImplementation "com.squareup.leakcanary:leakcanary-android:$leak_cannary"
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leak_cannary"
     androidTestImplementation project(':px-testlib')
     androidTestImplementation project(':testlib')

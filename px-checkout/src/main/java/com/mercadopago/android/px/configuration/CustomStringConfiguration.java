@@ -3,18 +3,15 @@ package com.mercadopago.android.px.configuration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.text.TextUtils;
 import java.io.Serializable;
 
 public final class CustomStringConfiguration implements Serializable {
 
-    @Nullable private final String customPaymentVaultTitle;
     @Nullable private final String customPayButtonText;
     @Nullable private final String customPayButtonProgressText;
     @Nullable private final String totalDescriptionText;
 
     /* default */ CustomStringConfiguration(@NonNull final Builder builder) {
-        customPaymentVaultTitle = builder.customPaymentVaultTitle;
         customPayButtonText = builder.customPayButtonText;
         customPayButtonProgressText = builder.customPayButtonProgressText;
         totalDescriptionText = builder.totalDescriptionText;
@@ -38,8 +35,9 @@ public final class CustomStringConfiguration implements Serializable {
      *
      * @return true/false if customPaymentVaultTitle is (or not) empty
      */
+    @Deprecated
     public boolean hasCustomPaymentVaultTitle() {
-        return !TextUtils.isEmpty(customPaymentVaultTitle);
+        return false;
     }
 
     /**
@@ -51,7 +49,7 @@ public final class CustomStringConfiguration implements Serializable {
     @Deprecated
     @Nullable
     public String getCustomPaymentVaultTitle() {
-        return customPaymentVaultTitle;
+        return null;
     }
 
     /**
@@ -85,7 +83,6 @@ public final class CustomStringConfiguration implements Serializable {
     }
 
     public static class Builder {
-        /* default */ String customPaymentVaultTitle;
         /* default */ String customPayButtonText;
         /* default */ String customPayButtonProgressText;
         /* default */ String totalDescriptionText;
@@ -117,7 +114,6 @@ public final class CustomStringConfiguration implements Serializable {
         @Deprecated
         @SuppressWarnings("unused")
         public Builder setCustomPaymentVaultTitle(@NonNull final String title) {
-            customPaymentVaultTitle = title;
             return this;
         }
 

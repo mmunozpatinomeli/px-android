@@ -14,8 +14,8 @@ import com.mercadopago.android.px.model.internal.CongratsResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.mapper.FromDiscountItemToItemId;
 import java.math.BigDecimal;
-
-import static com.mercadopago.android.px.internal.util.MercadoPagoUtil.isMP;
+import java.util.Collections;
+import java.util.Map;
 
 public final class ResultViewTrackModel extends TrackingMapModel {
 
@@ -38,6 +38,7 @@ public final class ResultViewTrackModel extends TrackingMapModel {
     private boolean hasTopView;
     private boolean hasImportantView;
     private boolean hasMoneySplitView;
+    private final Map<String, Object> extraInfo = Collections.emptyMap();
 
     private enum Style {
         GENERIC("generic"),
@@ -90,5 +91,9 @@ public final class ResultViewTrackModel extends TrackingMapModel {
         campaignId = campaign != null ? campaign.getId() : null;
         paymentMethodId = paymentMethod != null ? paymentMethod.getId() : null;
         paymentMethodType = paymentMethod != null ? paymentMethod.getPaymentTypeId() : null;
+
+        if (paymentData != null) {
+            extraInfo.putAll(PaymentDataExtraInfo.resultPaymentDataExtraInfo(paymentData).toMap());
+        }
     }
 }

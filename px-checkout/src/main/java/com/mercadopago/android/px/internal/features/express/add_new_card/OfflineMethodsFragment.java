@@ -164,7 +164,8 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
             session.getDiscountRepository(),
             session.getConfigurationModule().getProductIdProvider(),
             model.getPaymentTypes().isEmpty() ? TextUtil.EMPTY : model.getPaymentTypes().get(0).getId(),
-            session.getInitRepository(), session.getCongratsRepository());
+            session.getInitRepository(), session.getCongratsRepository(),
+            session.getConfigurationModule().getCustomTextsRepository());
     }
 
     @Override

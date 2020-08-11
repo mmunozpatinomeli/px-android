@@ -6,7 +6,7 @@ class FontConfigurator {
     companion object {
         @JvmStatic
         fun configure() {
-            val sampleFontTypefaceMapper = NunitoSansFontTypefaceMapper()
+            val sampleFontTypefaceMapper = MontserratFontTypefaceMapper()
             val sampleTypefaceSetter = SampleTypefaceSetter(sampleFontTypefaceMapper)
             TypefaceHelper.attachTypefaceSetter(sampleTypefaceSetter)
         }

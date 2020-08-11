@@ -9,6 +9,7 @@ import com.mercadopago.android.px.internal.repository.AmountConfigurationReposit
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
 import com.mercadopago.android.px.internal.repository.CongratsRepository;
+import com.mercadopago.android.px.internal.repository.CustomTextsRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
@@ -137,7 +138,9 @@ public class ExpressPaymentPresenterTest {
         when(MPTracker.getInstance()).thenReturn(mock(MPTracker.class));
         //This is needed for the presenter constructor
         final CheckoutPreference preference = mock(CheckoutPreference.class);
-        when(preference.getItems()).thenReturn(Collections.singletonList(mock(Item.class)));
+        final Item item = mock(Item.class);
+        when(item.getTitle()).thenReturn("Item title");
+        when(preference.getItems()).thenReturn(Collections.singletonList(item));
         when(paymentSettingRepository.getSite()).thenReturn(SiteStub.MLA.get());
         when(paymentSettingRepository.getCurrency()).thenReturn(CurrencyStub.MLA.get());
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(preference);
@@ -156,7 +159,7 @@ public class ExpressPaymentPresenterTest {
                 payerCostSelectionRepository, discountRepository, amountRepository, initRepository,
                 amountConfigurationRepository, chargeRepository, escManagerBehaviour, paymentMethodDrawableItemMapper,
                 congratsRepository, experimentsRepository, payerComplianceRepository, trackingRepository,
-                mock(PaymentMethodDescriptorMapper.class));
+                mock(PaymentMethodDescriptorMapper.class), mock(CustomTextsRepository.class));
 
         verifyAttachView();
     }

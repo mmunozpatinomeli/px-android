@@ -8,6 +8,7 @@ import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapp
 import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.CongratsRepository;
+import com.mercadopago.android.px.internal.repository.CustomTextsRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
@@ -52,7 +53,8 @@ class OfflineMethodsPresenter extends BasePresenter<OfflineMethods.OffMethodsVie
         @NonNull final ProductIdProvider productIdProvider,
         @NonNull final String defaultPaymentTypeId,
         @NonNull final InitRepository initRepository,
-        @NonNull final CongratsRepository congratsRepository) {
+        @NonNull final CongratsRepository congratsRepository,
+        @NonNull final CustomTextsRepository customTextsRepository) {
         this.paymentRepository = paymentRepository;
         this.paymentSettingRepository = paymentSettingRepository;
         this.amountRepository = amountRepository;
@@ -62,8 +64,7 @@ class OfflineMethodsPresenter extends BasePresenter<OfflineMethods.OffMethodsVie
         this.initRepository = initRepository;
         this.congratsRepository = congratsRepository;
 
-        payButtonViewModel = new PayButtonViewModelMapper().map(
-            paymentSettingRepository.getAdvancedConfiguration().getCustomStringConfiguration());
+        payButtonViewModel = new PayButtonViewModelMapper().map(customTextsRepository.getCustomTexts());
 
         explodeDecoratorMapper = new ExplodeDecoratorMapper();
     }

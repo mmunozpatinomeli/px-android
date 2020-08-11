@@ -23,6 +23,7 @@ import com.mercadopago.android.px.internal.repository.AmountConfigurationReposit
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
 import com.mercadopago.android.px.internal.repository.CongratsRepository;
+import com.mercadopago.android.px.internal.repository.CustomTextsRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
@@ -101,6 +102,7 @@ import java.util.Set;
     @NonNull private final PayerComplianceRepository payerComplianceRepository;
     @NonNull private final TrackingRepository trackingRepository;
     @NonNull private final PaymentMethodDescriptorMapper paymentMethodDescriptorMapper;
+    @NonNull private final CustomTextsRepository customTextsRepository;
     @Nullable private Runnable unattendedEvent;
     @NonNull /* default */ final InitRepository initRepository;
     private final PayerCostSelectionRepository payerCostSelectionRepository;
@@ -130,7 +132,8 @@ import java.util.Set;
         @NonNull final ExperimentsRepository experimentsRepository,
         @NonNull final PayerComplianceRepository payerComplianceRepository,
         @NonNull final TrackingRepository trackingRepository,
-        @NonNull final PaymentMethodDescriptorMapper paymentMethodDescriptorMapper) {
+        @NonNull final PaymentMethodDescriptorMapper paymentMethodDescriptorMapper,
+        @NonNull final CustomTextsRepository customTextsRepository) {
 
         this.paymentRepository = paymentRepository;
         this.paymentSettingRepository = paymentSettingRepository;
@@ -148,6 +151,7 @@ import java.util.Set;
         this.payerComplianceRepository = payerComplianceRepository;
         this.trackingRepository = trackingRepository;
         this.paymentMethodDescriptorMapper = paymentMethodDescriptorMapper;
+        this.customTextsRepository = customTextsRepository;
 
         splitSelectionState = new SplitSelectionState();
         triggerableQueue = new TriggerableQueue();
@@ -165,9 +169,9 @@ import java.util.Set;
             new ElementDescriptorMapper().map(summaryInfo);
 
         final List<SummaryView.Model> summaryModels =
-            new SummaryViewModelMapper(paymentSettingRepository.getCurrency(),
-                discountRepository, amountRepository, elementDescriptorModel, this, summaryInfo,
-                chargeRepository, amountConfigurationRepository).map(new ArrayList<>(expressMetadataList));
+            new SummaryViewModelMapper(paymentSettingRepository.getCurrency(), discountRepository, amountRepository,
+                elementDescriptorModel, this, summaryInfo, chargeRepository, amountConfigurationRepository,
+                customTextsRepository).map(new ArrayList<>(expressMetadataList));
 
         final List<PaymentMethodDescriptorView.Model> paymentModels =
             paymentMethodDescriptorMapper.map(expressMetadataList);
