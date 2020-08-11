@@ -239,7 +239,6 @@ public class PaymentCongratsModel implements Parcelable {
         /* default */ List<PaymentInfo> paymentsInfo;
 
         /* default */ String receiptId;
-        /* default */ List<String> receiptIdList;
 
         // Exit Buttons
         /* default */ ExitAction exitActionPrimary;
@@ -335,15 +334,6 @@ public class PaymentCongratsModel implements Parcelable {
         }
 
         /**
-         * @param receiptIdList The list of receipt ids
-         * @return builder
-         */
-        public Builder withReceiptIdList(final List<String> receiptIdList) {
-            this.receiptIdList = receiptIdList;
-            return this;
-        }
-
-        /**
          * if help is set, then a small box with help instructions will appear
          *
          * @param help a help message
@@ -417,7 +407,7 @@ public class PaymentCongratsModel implements Parcelable {
          * @param shouldShowPaymentMethod visibility mode, default value is "false"
          * @return builder
          */
-        public Builder withShouldPaymentMethod(final boolean shouldShowPaymentMethod) {
+        public Builder withShouldShowPaymentMethod(final boolean shouldShowPaymentMethod) {
             this.shouldShowPaymentMethod = shouldShowPaymentMethod;
             return this;
         }
@@ -436,12 +426,36 @@ public class PaymentCongratsModel implements Parcelable {
         /**
          * Custom fragment that will appear before payment method description inside Business result screen.
          *
+         * @param externalFragment a fragment to be displayed
+         * @return builder
+         */
+
+        /* default */ Builder withTopFragment(@NonNull final ExternalFragment externalFragment) {
+            this.topFragment = externalFragment;
+            return this;
+        }
+
+        /**
+         * Custom fragment that will appear before payment method description inside Business result screen.
+         *
          * @param zClass fragment class
          * @param args args for fragment class
          * @return builder
          */
         public Builder withTopFragment(@NonNull final Class<? extends Fragment> zClass, @Nullable final Bundle args) {
             this.topFragment = new ExternalFragment(zClass, args);
+            return this;
+        }
+
+        /**
+         * Custom fragment that will appear after payment method description inside Business result screen.
+         *
+         * @param externalFragment a fragment to be displayed
+         * @return builder
+         */
+
+        /* default */ Builder withBottomFragment(@NonNull final ExternalFragment externalFragment) {
+            this.bottomFragment = externalFragment;
             return this;
         }
 
@@ -455,6 +469,18 @@ public class PaymentCongratsModel implements Parcelable {
         public Builder withBottomFragment(@NonNull final Class<? extends Fragment> zClass,
             @Nullable final Bundle args) {
             this.bottomFragment = new ExternalFragment(zClass, args);
+            return this;
+        }
+
+        /**
+         * Custom fragment that will appear at the top of all information inside Business result screen.
+         *
+         * @param externalFragment a fragment to be displayed
+         * @return builder
+         */
+
+        /* default */ Builder withImportantFragment(@NonNull final ExternalFragment externalFragment) {
+            this.importantFragment = externalFragment;
             return this;
         }
 
@@ -509,7 +535,7 @@ public class PaymentCongratsModel implements Parcelable {
         }
 
         /**
-         * @param viewReceipt a button that takes you to hte payment receipt
+         * @param viewReceipt a button that takes you to the payment receipt
          * @return builder with the added object
          */
         public Builder withViewReceipt(final PaymentCongratsResponse.Action viewReceipt) {

@@ -9,6 +9,8 @@ import android.widget.Button;
 import com.mercadopago.android.px.core.CheckoutLazyInit;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.feature.custom_initialize.CustomInitializationActivity;
+import com.mercadopago.android.px.internal.features.payment_congrats.PaymentCongrats;
+import com.mercadopago.android.px.internal.features.payment_congrats.PaymentCongratsMock;
 import com.mercadopago.android.px.utils.ExamplesUtils;
 import com.mercadopago.example.R;
 
@@ -20,6 +22,7 @@ public class CheckoutExampleActivity extends ExampleBaseActivity {
     private View mRegularLayout;
     private Button continueSimpleCheckout;
     private static final int REQ_CODE_CHECKOUT = 1;
+    private Button paymentCongratsButton;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -64,6 +67,12 @@ public class CheckoutExampleActivity extends ExampleBaseActivity {
 
         continueSimpleCheckout.setOnClickListener(
             v -> ExamplesUtils.createBase().build().startPayment(CheckoutExampleActivity.this, REQUEST_CODE));
+
+        paymentCongratsButton = findViewById(R.id.payment_congrats_button);
+
+        paymentCongratsButton.setOnClickListener(
+            v -> PaymentCongrats.show(PaymentCongratsMock.getMock(), this, 13)
+        );
     }
 
     @Override

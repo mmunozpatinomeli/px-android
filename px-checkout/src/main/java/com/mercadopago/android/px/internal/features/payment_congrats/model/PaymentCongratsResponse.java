@@ -695,7 +695,7 @@ public final class PaymentCongratsResponse implements Parcelable {
         private final String label;
         private final String target;
 
-        public Action(final String label, final String target) {
+        public Action(final String label, @Nullable final String target) {
             this.label = label;
             this.target = target;
         }

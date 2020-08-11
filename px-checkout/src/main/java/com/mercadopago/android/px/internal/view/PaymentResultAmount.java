@@ -76,8 +76,10 @@ public class PaymentResultAmount extends FlexboxLayout {
 
     @Nullable
     private String getNoRate(@Nullable final Model model) {
-        if (BigDecimal.ZERO.equals(model.installmentsRate)) {
-            return getResources().getString(R.string.px_zero_rate).toLowerCase();
+        if (hasPayerCostWithMultipleInstallments(model.numberOfInstallments)) {
+            if (BigDecimal.ZERO.equals(model.installmentsRate)) {
+                return getResources().getString(R.string.px_zero_rate).toLowerCase();
+            }
         }
         return null;
     }
