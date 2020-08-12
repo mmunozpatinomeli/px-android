@@ -28,20 +28,20 @@ public class PaymentCongratsModelMapper {
             .withCongratsType(
                 PaymentCongratsModel.CongratsType.fromName(businessPayment.getPaymentStatus()))
             .withCrossSelling(paymentCongratsResponse.getCrossSellings())
-            .withTitle(businessPayment.getTitle())
+            .withHeader(businessPayment.getTitle(),businessPayment.getImageUrl())
             .withShouldShowPaymentMethod(businessPayment.shouldShowPaymentMethod())
-            .withShouldShowReceipt(businessPayment.shouldShowReceipt())
             .withIconId(businessPayment.getIcon())
-            .withPaymentsInfo(getPaymentsInfo(businessPaymentModel.getPaymentResult().getPaymentDataList(),
-                businessPaymentModel.getCurrency()))
-            .withCustomOrder(businessPaymentModel.getCongratsResponse().hasCustomOrder());
+            .withPaymentMethodInfo(getPaymentsInfo(businessPaymentModel.getPaymentResult().getPaymentDataList(),
+                businessPaymentModel.getCurrency()).get(0))
+            .withPaymentMethodInfo(getPaymentsInfo(businessPaymentModel.getPaymentResult().getPaymentDataList(),
+                businessPaymentModel.getCurrency()).get(1));
 
         if (businessPayment.getPrimaryAction() != null && businessPayment.getPrimaryAction().getName() != null) {
-            builder.withExitActionPrimary(businessPayment.getPrimaryAction().getName(),
+            builder.withFooterMainAction(businessPayment.getPrimaryAction().getName(),
                 businessPayment.getPrimaryAction().getResCode());
         }
         if (businessPayment.getSecondaryAction() != null && businessPayment.getSecondaryAction().getName() != null) {
-            builder.withExitActionSecondary(businessPayment.getSecondaryAction().getName(),
+            builder.withFooterSecondaryAction(businessPayment.getSecondaryAction().getName(),
                 businessPayment.getSecondaryAction().getResCode());
         }
         if (businessPayment.getHelp() != null) {
@@ -49,9 +49,6 @@ public class PaymentCongratsModelMapper {
         }
         if (paymentCongratsResponse.getDiscount() != null) {
             builder.withDiscount(paymentCongratsResponse.getDiscount());
-        }
-        if (businessPayment.getImageUrl() != null) {
-            builder.withImageUrl(businessPayment.getImageUrl());
         }
         if (businessPayment.getBottomFragment() != null) {
             builder.withBottomFragment(businessPayment.getBottomFragment());
@@ -69,7 +66,7 @@ public class PaymentCongratsModelMapper {
             builder.withScore(paymentCongratsResponse.getScore());
         }
         if (businessPayment.getReceipt() != null) {
-            builder.withReceiptId(businessPayment.getReceipt());
+            builder.withReceipt(businessPayment.getReceipt(),paymentCongratsResponse.getViewReceipt());
         }
         if (businessPayment.getStatementDescription() != null) {
             builder.withStatementDescription(businessPayment.getStatementDescription());
@@ -77,9 +74,9 @@ public class PaymentCongratsModelMapper {
         if (businessPayment.getSubtitle() != null) {
             builder.withSubtitle(businessPayment.getSubtitle());
         }
-        if (paymentCongratsResponse.getViewReceipt() != null) {
-            builder.withViewReceipt(paymentCongratsResponse.getViewReceipt());
-        }
+//        if (paymentCongratsResponse.getViewReceipt() != null) {
+//            builder.withViewReceipt(paymentCongratsResponse.getViewReceipt());
+//        }
 
         return builder.build();
     }
@@ -92,7 +89,7 @@ public class PaymentCongratsModelMapper {
                     PaymentInfo.PaymentMethodType.fromName(paymentData.getPaymentMethod().getPaymentTypeId()))
                 .withPaymentMethodId(paymentData.getPaymentMethod().getId())
                 .withPaymentMethodName(paymentData.getPaymentMethod().getName())
-                .withAmountPaid(getPrettyAmount(currency,
+                .withPaidAmount(getPrettyAmount(currency,
                     PaymentDataHelper.getPrettyAmountToPay(paymentData)));
             if (paymentData.getToken() != null && paymentData.getToken().getLastFourDigits() != null) {
                 paymentInfo.withLastFourDigits(paymentData.getToken().getLastFourDigits());

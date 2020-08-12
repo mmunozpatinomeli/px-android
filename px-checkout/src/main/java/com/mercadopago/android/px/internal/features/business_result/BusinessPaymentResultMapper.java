@@ -38,7 +38,7 @@ public class BusinessPaymentResultMapper extends Mapper<PaymentCongratsModel, Bu
             .setMethodModels(methodModels)
             .setCongratsViewModel(new PaymentCongratsResponseMapper(new BusinessPaymentResultTracker())
                 .map(model.getPaymentCongratsResponse()))
-            .setReceiptId((type == PaymentCongratsModel.CongratsType.APPROVED && model.getShouldShowReceipt()) ? model
+            .setReceiptId((type == PaymentCongratsModel.CongratsType.APPROVED && (model.getReceiptId() != null)) ? model
                 .getReceiptId() : null)
             .setHelp(model.getHelp())
             .setStatement(model.getStatementDescription())

@@ -38,7 +38,7 @@ public final class PaymentCongratsMock {
                 .withPaymentMethodId("account_money")
                 .withPaymentMethodName("Money in Mercado Pago")
                 .withPaymentMethodType(PaymentInfo.PaymentMethodType.ACCOUNT_MONEY)
-                .withAmountPaid("$100")
+                .withPaidAmount("$100")
                 .withDiscountData("50% OFF", "$200")
                 .build()
         );
@@ -48,7 +48,7 @@ public final class PaymentCongratsMock {
                 .withPaymentMethodName("Visa")
                 .withPaymentMethodType(PaymentInfo.PaymentMethodType.CREDIT_CARD)
                 .withLastFourDigits("8020")
-                .withAmountPaid( "$100")
+                .withPaidAmount( "$100")
                 .withInstallmentsData(3, "$39,90", "$119,70", BigDecimal.valueOf(19.71))
                 .build()
         );
@@ -56,13 +56,12 @@ public final class PaymentCongratsMock {
         //Congrats
         PaymentCongratsModel congrats = new PaymentCongratsModel.Builder()
             .withCongratsType(PaymentCongratsModel.CongratsType.APPROVED)
-            .withTitle("Payment Congrats Example")
-            .withImageUrl("https://www.jqueryscript.net/images/Simplest-Responsive-jQuery-Image-Lightbox-Plugin-simple-lightbox.jpg")
-            .withExitActionSecondary("Continuar", 13)
-            .withPaymentsInfo(paymentList)
+            .withHeader("Payment Congrats Example","https://www.jqueryscript.net/images/Simplest-Responsive-jQuery-Image-Lightbox-Plugin-simple-lightbox.jpg")
+            .withFooterSecondaryAction("Continuar", 13)
+            .withPaymentMethodInfo(paymentList.get(0))
+            .withSplitPaymentMethod(paymentList.get(1))
             .withShouldShowPaymentMethod(true)
-            .withShouldShowReceipt(true)
-            .withReceiptId("12312312")
+            .withReceipt("12312312",action)
             .withDiscount(discount)
             .withScore(score)
             .build();
