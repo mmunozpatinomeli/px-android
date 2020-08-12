@@ -25,9 +25,9 @@ public class PaymentInfo implements Parcelable {
     @Nullable public final String lastFourDigits;
     @NonNull public final String paymentMethodId;
     @NonNull public final PaymentMethodType paymentMethodType;
-    @NonNull public final String amountPaid;
+    @NonNull public final String paidAmount;
     @Nullable public final String discountName;
-    @NonNull public final Integer numberOfInstallments;
+    @NonNull public final Integer installmentsCount;
     @Nullable public final String installmentsAmount;
     @Nullable public final String installmentsTotalAmount;
     @Nullable public final BigDecimal installmentsRate;
@@ -40,9 +40,9 @@ public class PaymentInfo implements Parcelable {
         lastFourDigits = builder.lastFourDigits;
         paymentMethodId = builder.paymentMethodId;
         paymentMethodType = builder.paymentMethodType;
-        amountPaid = builder.amountPaid;
+        paidAmount = builder.paidAmount;
         discountName = builder.discountName;
-        numberOfInstallments = builder.numberOfInstallments;
+        installmentsCount = builder.installmentsCount;
         installmentsAmount = builder.installmentsAmount;
         installmentsRate = builder.installmentsRate;
         consumerCreditsInfo = builder.consumerCreditsInfo;
@@ -56,9 +56,9 @@ public class PaymentInfo implements Parcelable {
         lastFourDigits = in.readString();
         paymentMethodId = in.readString();
         paymentMethodType = PaymentMethodType.values()[in.readInt()];
-        amountPaid = in.readString();
+        paidAmount = in.readString();
         discountName = in.readString();
-        numberOfInstallments = in.readInt();
+        installmentsCount = in.readInt();
         installmentsAmount = in.readString();
         installmentsTotalAmount = in.readString();
         if (in.readByte() == 0) {
@@ -82,9 +82,9 @@ public class PaymentInfo implements Parcelable {
         dest.writeString(lastFourDigits);
         dest.writeString(paymentMethodId);
         dest.writeInt(paymentMethodType.ordinal());
-        dest.writeString(amountPaid);
+        dest.writeString(paidAmount);
         dest.writeString(discountName);
-        dest.writeInt(numberOfInstallments);
+        dest.writeInt(installmentsCount);
         dest.writeString(installmentsAmount);
         dest.writeString(installmentsTotalAmount);
         if (installmentsRate == null) {
@@ -130,9 +130,9 @@ public class PaymentInfo implements Parcelable {
         /* default */ String lastFourDigits;
         /* default */ String paymentMethodId;
         /* default */ PaymentMethodType paymentMethodType;
-        /* default */ String amountPaid;
+        /* default */ String paidAmount;
         /* default */ String discountName;
-        /* default */ Integer numberOfInstallments = 0;
+        /* default */ Integer installmentsCount = 0;
         /* default */ String installmentsAmount;
         /* default */ String installmentsTotalAmount;
         /* default */ BigDecimal installmentsRate;
@@ -162,11 +162,11 @@ public class PaymentInfo implements Parcelable {
         /**
          * Adds the total amount actually paid by the user
          *
-         * @param amountPaid the amount actually paid by the user
+         * @param paidAmount the amount actually paid by the user
          * @return Builder
          */
-        public Builder withAmountPaid(final String amountPaid) {
-            this.amountPaid = amountPaid;
+        public Builder withPaidAmount(final String paidAmount) {
+            this.paidAmount = paidAmount;
             return this;
         }
 
@@ -218,15 +218,15 @@ public class PaymentInfo implements Parcelable {
 
         /**
          * Adds the installments info
-         * @param numberOfInstallments number of installments, if there ara non 0 should be passes as param
+         * @param installmentsCount number of installments, if there ara non 0 should be passes as param
          * @param installmentsAmount the amount to be paid for each installment
          * @param installmentsTotalAmount the total amount to pay
          * @param installmentsRate the rate/interest of the installments. If its without a rate or interest "0" should
          * @return
          */
-        public Builder withInstallmentsData(final Integer numberOfInstallments, final String installmentsAmount,
+        public Builder withInstallmentsData(final Integer installmentsCount, final String installmentsAmount,
             final String installmentsTotalAmount, final BigDecimal installmentsRate) {
-            this.numberOfInstallments = numberOfInstallments;
+            this.installmentsCount = installmentsCount;
             this.installmentsAmount = installmentsAmount;
             this.installmentsTotalAmount = installmentsTotalAmount;
             this.installmentsRate = installmentsRate;
