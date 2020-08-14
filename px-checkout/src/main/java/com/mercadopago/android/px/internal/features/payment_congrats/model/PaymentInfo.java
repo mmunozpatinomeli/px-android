@@ -106,7 +106,8 @@ public class PaymentInfo implements Parcelable {
         DIGITAL_CURRENCY("digital_currency"),
         BANK_TRANSFER("bank_transfer"),
         ACCOUNT_MONEY("account_money"),
-        PLUGIN("payment_method_plugin");
+        PLUGIN("payment_method_plugin"),
+        CONSUMER_CREDITS("consumer_credits");
 
         public final String value;
 

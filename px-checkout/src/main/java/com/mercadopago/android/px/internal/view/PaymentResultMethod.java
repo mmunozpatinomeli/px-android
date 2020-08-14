@@ -132,15 +132,18 @@ public class PaymentResultMethod extends ConstraintLayout {
                     paymentData.getPaymentMethod().getDisplayInfo().getResultInfo().getTitle()
                     , paymentData.getPaymentMethod().getDisplayInfo().getResultInfo().getSubtitle());
 
-                final PaymentCongratsText description = new PaymentCongratsText(
-                    paymentData.getPaymentMethod().getDisplayInfo().getDescription().getMessage(),
-                    paymentData.getPaymentMethod().getDisplayInfo().getDescription().getBackgroundColor(),
-                    paymentData.getPaymentMethod().getDisplayInfo().getDescription().getTextColor(),
-                    paymentData.getPaymentMethod().getDisplayInfo().getDescription().getWeight()
-                );
+                paymentInfoBuilder.withConsumerCreditsInfo(paymentResultInfo);
 
-                paymentInfoBuilder.withConsumerCreditsInfo(paymentResultInfo)
-                    .withDescription(description);
+                if (paymentData.getPaymentMethod().getDisplayInfo().getDescription() != null) {
+                    final PaymentCongratsText description = new PaymentCongratsText(
+                        paymentData.getPaymentMethod().getDisplayInfo().getDescription() != null ? paymentData.getPaymentMethod().getDisplayInfo().getDescription().getMessage(): "",
+                        paymentData.getPaymentMethod().getDisplayInfo().getDescription().getBackgroundColor(),
+                        paymentData.getPaymentMethod().getDisplayInfo().getDescription().getTextColor(),
+                        paymentData.getPaymentMethod().getDisplayInfo().getDescription().getWeight()
+                    );
+                    paymentInfoBuilder.withDescription(description);
+                }
+
             }
             if (paymentData.getDiscount() != null) {
                 paymentInfoBuilder
