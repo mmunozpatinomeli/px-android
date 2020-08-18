@@ -259,7 +259,7 @@ public class PaymentCongratsModel implements Parcelable {
         /* default */ PaymentCongratsResponse.Loyalty loyalty;
         /* default */ PaymentCongratsResponse.Discount discount;
         /* default */ List<PaymentCongratsResponse.CrossSelling> crossSelling;
-        /* default */ PaymentCongratsResponse.MoneySplit moneySplit;
+        /* default */ PaymentCongratsResponse.ExpenseSplit expenseSplit;
         /* default */ PaymentCongratsResponse.Action receiptAction;
         /* default */ boolean customSorting = false;
 
@@ -271,7 +271,7 @@ public class PaymentCongratsModel implements Parcelable {
                 throw new IllegalStateException("At least one button should be provided for PaymentCongrats");
             }
             paymentCongratsResponse =
-                new PaymentCongratsResponse(loyalty, discount, moneySplit, crossSelling, receiptAction,
+                new PaymentCongratsResponse(loyalty, discount, expenseSplit, crossSelling, receiptAction,
                     customSorting);
 
             return new PaymentCongratsModel(this);
@@ -502,7 +502,7 @@ public class PaymentCongratsModel implements Parcelable {
          * @param discount an object containing the needed info to display discount MLBusinessComponent
          * @return builder with the added object
          */
-        public Builder withDiscount(final PaymentCongratsResponse.Discount discount) {
+        public Builder withDiscounts(final PaymentCongratsResponse.Discount discount) {
             this.discount = discount;
             return this;
         }
@@ -518,11 +518,11 @@ public class PaymentCongratsModel implements Parcelable {
         }
 
         /**
-         * @param moneySplit an object containing the needed info to display the money split MLBusinessComponent
+         * @param expenseSplit an object containing the needed info to display the money split MLBusinessComponent
          * @return builder with the added object
          */
-        public Builder withMoneySplit(final PaymentCongratsResponse.MoneySplit moneySplit) {
-            this.moneySplit = moneySplit;
+        public Builder withExpenseSplit(final PaymentCongratsResponse.ExpenseSplit expenseSplit) {
+            this.expenseSplit = expenseSplit;
             return this;
         }
 

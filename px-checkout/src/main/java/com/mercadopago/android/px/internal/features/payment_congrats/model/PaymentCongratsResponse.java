@@ -27,7 +27,7 @@ public final class PaymentCongratsResponse implements Parcelable {
 
     @Nullable private final Loyalty loyalty;
     @Nullable private final Discount discount;
-    @Nullable private final MoneySplit moneySplit;
+    @Nullable private final ExpenseSplit expenseSplit;
     private final List<CrossSelling> crossSellings;
     private final Action viewReceipt;
     private final boolean customOrder;
@@ -35,12 +35,12 @@ public final class PaymentCongratsResponse implements Parcelable {
     public PaymentCongratsResponse(
         @Nullable final Loyalty loyalty,
         @Nullable final Discount discount, @Nullable final
-    MoneySplit moneySplit,
+    ExpenseSplit expenseSplit,
         final List<CrossSelling> crossSellings, final Action viewReceipt,
         final boolean customOrder) {
         this.loyalty = loyalty;
         this.discount = discount;
-        this.moneySplit = moneySplit;
+        this.expenseSplit = expenseSplit;
         this.crossSellings = crossSellings;
         this.viewReceipt = viewReceipt;
         this.customOrder = customOrder;
@@ -49,7 +49,7 @@ public final class PaymentCongratsResponse implements Parcelable {
     private PaymentCongratsResponse() {
         loyalty = null;
         discount = null;
-        moneySplit = null;
+        expenseSplit = null;
         crossSellings = Collections.emptyList();
         viewReceipt = null;
         customOrder = false;
@@ -58,7 +58,7 @@ public final class PaymentCongratsResponse implements Parcelable {
     /* default */ PaymentCongratsResponse(final Parcel in) {
         loyalty = in.readParcelable(Loyalty.class.getClassLoader());
         discount = in.readParcelable(Discount.class.getClassLoader());
-        moneySplit = in.readParcelable(MoneySplit.class.getClassLoader());
+        expenseSplit = in.readParcelable(ExpenseSplit.class.getClassLoader());
         crossSellings = in.createTypedArrayList(CrossSelling.CREATOR);
         viewReceipt = in.readParcelable(Action.class.getClassLoader());
         customOrder = in.readInt() == 1;
@@ -68,7 +68,7 @@ public final class PaymentCongratsResponse implements Parcelable {
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeParcelable(loyalty, flags);
         dest.writeParcelable(discount, flags);
-        dest.writeParcelable(moneySplit, flags);
+        dest.writeParcelable(expenseSplit, flags);
         dest.writeTypedList(crossSellings);
         dest.writeParcelable(viewReceipt, flags);
         dest.writeInt(customOrder ? 1 : 0);
@@ -90,8 +90,8 @@ public final class PaymentCongratsResponse implements Parcelable {
     }
 
     @Nullable
-    public MoneySplit getMoneySplit() {
-        return moneySplit;
+    public ExpenseSplit getExpenseSplit() {
+        return expenseSplit;
     }
 
     @NonNull
@@ -624,29 +624,29 @@ public final class PaymentCongratsResponse implements Parcelable {
         }
     }
 
-    public static final class MoneySplit implements Parcelable {
-        public static final Creator<MoneySplit> CREATOR = new Creator<MoneySplit>() {
+    public static final class ExpenseSplit implements Parcelable {
+        public static final Creator<ExpenseSplit> CREATOR = new Creator<ExpenseSplit>() {
             @Override
-            public MoneySplit createFromParcel(final Parcel in) {
-                return new MoneySplit(in);
+            public ExpenseSplit createFromParcel(final Parcel in) {
+                return new ExpenseSplit(in);
             }
 
             @Override
-            public MoneySplit[] newArray(final int size) {
-                return new MoneySplit[size];
+            public ExpenseSplit[] newArray(final int size) {
+                return new ExpenseSplit[size];
             }
         };
         private final PaymentCongratsText title;
         private final Action action;
         private final String imageUrl;
 
-        public MoneySplit(final PaymentCongratsText title, final Action action, final String imageUrl) {
+        public ExpenseSplit(final PaymentCongratsText title, final Action action, final String imageUrl) {
             this.title = title;
             this.action = action;
             this.imageUrl = imageUrl;
         }
 
-        /* default */ MoneySplit(final Parcel in) {
+        /* default */ ExpenseSplit(final Parcel in) {
             title = in.readParcelable(PaymentCongratsText.class.getClassLoader());
             action = in.readParcelable(Action.class.getClassLoader());
             imageUrl = in.readString();
