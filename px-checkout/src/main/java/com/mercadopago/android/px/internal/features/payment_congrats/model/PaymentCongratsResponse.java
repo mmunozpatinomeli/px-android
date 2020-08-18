@@ -25,7 +25,7 @@ public final class PaymentCongratsResponse implements Parcelable {
         }
     };
 
-    @Nullable private final Score score;
+    @Nullable private final Loyalty loyalty;
     @Nullable private final Discount discount;
     @Nullable private final MoneySplit moneySplit;
     private final List<CrossSelling> crossSellings;
@@ -33,12 +33,12 @@ public final class PaymentCongratsResponse implements Parcelable {
     private final boolean customOrder;
 
     public PaymentCongratsResponse(
-        @Nullable final Score score,
+        @Nullable final Loyalty loyalty,
         @Nullable final Discount discount, @Nullable final
     MoneySplit moneySplit,
         final List<CrossSelling> crossSellings, final Action viewReceipt,
         final boolean customOrder) {
-        this.score = score;
+        this.loyalty = loyalty;
         this.discount = discount;
         this.moneySplit = moneySplit;
         this.crossSellings = crossSellings;
@@ -47,7 +47,7 @@ public final class PaymentCongratsResponse implements Parcelable {
     }
 
     private PaymentCongratsResponse() {
-        score = null;
+        loyalty = null;
         discount = null;
         moneySplit = null;
         crossSellings = Collections.emptyList();
@@ -56,7 +56,7 @@ public final class PaymentCongratsResponse implements Parcelable {
     }
 
     /* default */ PaymentCongratsResponse(final Parcel in) {
-        score = in.readParcelable(Score.class.getClassLoader());
+        loyalty = in.readParcelable(Loyalty.class.getClassLoader());
         discount = in.readParcelable(Discount.class.getClassLoader());
         moneySplit = in.readParcelable(MoneySplit.class.getClassLoader());
         crossSellings = in.createTypedArrayList(CrossSelling.CREATOR);
@@ -66,7 +66,7 @@ public final class PaymentCongratsResponse implements Parcelable {
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeParcelable(score, flags);
+        dest.writeParcelable(loyalty, flags);
         dest.writeParcelable(discount, flags);
         dest.writeParcelable(moneySplit, flags);
         dest.writeTypedList(crossSellings);
@@ -80,8 +80,8 @@ public final class PaymentCongratsResponse implements Parcelable {
     }
 
     @Nullable
-    public Score getScore() {
-        return score;
+    public Loyalty getLoyalty() {
+        return loyalty;
     }
 
     @Nullable
@@ -108,33 +108,33 @@ public final class PaymentCongratsResponse implements Parcelable {
         return customOrder;
     }
 
-    /* default */public static final class Score implements Parcelable {
+    /* default */public static final class Loyalty implements Parcelable {
 
-        public static final Creator<Score> CREATOR = new Creator<Score>() {
+        public static final Creator<Loyalty> CREATOR = new Creator<Loyalty>() {
             @Override
-            public Score createFromParcel(final Parcel in) {
-                return new Score(in);
+            public Loyalty createFromParcel(final Parcel in) {
+                return new Loyalty(in);
             }
 
             @Override
-            public Score[] newArray(final int size) {
-                return new Score[size];
+            public Loyalty[] newArray(final int size) {
+                return new Loyalty[size];
             }
         };
 
-        private final Score.Progress progress;
+        private final Loyalty.Progress progress;
         private final String title;
         private final Action action;
 
-        public Score(
+        public Loyalty(
             final Progress progress, final String title, final Action action) {
             this.progress = progress;
             this.title = title;
             this.action = action;
         }
 
-        /* default */ Score(final Parcel in) {
-            progress = in.readParcelable(Score.Progress.class.getClassLoader());
+        /* default */ Loyalty(final Parcel in) {
+            progress = in.readParcelable(Loyalty.Progress.class.getClassLoader());
             title = in.readString();
             action = in.readParcelable(Action.class.getClassLoader());
         }
@@ -151,7 +151,7 @@ public final class PaymentCongratsResponse implements Parcelable {
             return 0;
         }
 
-        public Score.Progress getProgress() {
+        public Loyalty.Progress getProgress() {
             return progress;
         }
 
@@ -165,15 +165,15 @@ public final class PaymentCongratsResponse implements Parcelable {
 
         /* default */ public static final class Progress implements Parcelable {
 
-            public static final Creator<Score.Progress> CREATOR = new Creator<Score.Progress>() {
+            public static final Creator<Loyalty.Progress> CREATOR = new Creator<Loyalty.Progress>() {
                 @Override
-                public Score.Progress createFromParcel(final Parcel in) {
-                    return new Score.Progress(in);
+                public Loyalty.Progress createFromParcel(final Parcel in) {
+                    return new Loyalty.Progress(in);
                 }
 
                 @Override
-                public Score.Progress[] newArray(final int size) {
-                    return new Score.Progress[size];
+                public Loyalty.Progress[] newArray(final int size) {
+                    return new Loyalty.Progress[size];
                 }
             };
 

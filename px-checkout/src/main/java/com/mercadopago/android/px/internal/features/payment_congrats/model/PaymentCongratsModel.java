@@ -256,7 +256,7 @@ public class PaymentCongratsModel implements Parcelable {
         /* default */ PaymentCongratsResponse paymentCongratsResponse;
 
         // MLBusinessComponents
-        /* default */ PaymentCongratsResponse.Score score;
+        /* default */ PaymentCongratsResponse.Loyalty loyalty;
         /* default */ PaymentCongratsResponse.Discount discount;
         /* default */ List<PaymentCongratsResponse.CrossSelling> crossSelling;
         /* default */ PaymentCongratsResponse.MoneySplit moneySplit;
@@ -271,7 +271,7 @@ public class PaymentCongratsModel implements Parcelable {
                 throw new IllegalStateException("At least one button should be provided for PaymentCongrats");
             }
             paymentCongratsResponse =
-                new PaymentCongratsResponse(score, discount, moneySplit, crossSelling, receiptAction,
+                new PaymentCongratsResponse(loyalty, discount, moneySplit, crossSelling, receiptAction,
                     customSorting);
 
             return new PaymentCongratsModel(this);
@@ -490,11 +490,11 @@ public class PaymentCongratsModel implements Parcelable {
         }
 
         /**
-         * @param score an object containing the needed info to display score MLBusinessComponent
+         * @param loyalty an object containing the needed info to display loyalty MLBusinessComponent
          * @return builder with the added object
          */
-        public Builder withScore(final PaymentCongratsResponse.Score score) {
-            this.score = score;
+        public Builder withLoyalty(final PaymentCongratsResponse.Loyalty loyalty) {
+            this.loyalty = loyalty;
             return this;
         }
 
