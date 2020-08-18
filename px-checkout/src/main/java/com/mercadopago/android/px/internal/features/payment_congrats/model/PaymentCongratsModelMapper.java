@@ -50,7 +50,7 @@ public class PaymentCongratsModelMapper {
             builder.withHelp(businessPayment.getHelp());
         }
         if (paymentCongratsResponse.getDiscount() != null) {
-            builder.withDiscount(paymentCongratsResponse.getDiscount());
+            builder.withDiscounts(paymentCongratsResponse.getDiscount());
         }
         if (businessPayment.getBottomFragment() != null) {
             builder.withBottomFragment(businessPayment.getBottomFragment());
@@ -61,14 +61,16 @@ public class PaymentCongratsModelMapper {
         if (businessPayment.getImportantFragment() != null) {
             builder.withImportantFragment(businessPayment.getImportantFragment());
         }
-        if (paymentCongratsResponse.getMoneySplit() != null) {
-            builder.withMoneySplit(paymentCongratsResponse.getMoneySplit());
+        if (paymentCongratsResponse.getExpenseSplit() != null) {
+            builder.withExpenseSplit(paymentCongratsResponse.getExpenseSplit());
         }
-        if (paymentCongratsResponse.getScore() != null) {
-            builder.withScore(paymentCongratsResponse.getScore());
+        if (paymentCongratsResponse.getLoyalty() != null) {
+            builder.withLoyalty(paymentCongratsResponse.getLoyalty());
         }
         if (businessPayment.getReceipt() != null) {
-            builder.withReceipt(businessPayment.getReceipt(),paymentCongratsResponse.getViewReceipt());
+            builder.withReceipt(businessPayment.getReceipt(),
+                businessPayment.shouldShowReceipt(),
+                paymentCongratsResponse.getViewReceipt());
         }
         if (businessPayment.getStatementDescription() != null) {
             builder.withStatementDescription(businessPayment.getStatementDescription());
@@ -76,9 +78,6 @@ public class PaymentCongratsModelMapper {
         if (businessPayment.getSubtitle() != null) {
             builder.withSubtitle(businessPayment.getSubtitle());
         }
-//        if (paymentCongratsResponse.getViewReceipt() != null) {
-//            builder.withViewReceipt(paymentCongratsResponse.getViewReceipt());
-//        }
 
         return builder.build();
     }

@@ -132,7 +132,7 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 
     @Override
     public void onClickMoneySplit() {
-        final PaymentCongratsResponse.MoneySplit moneySplit = model.getPaymentCongratsResponse().getMoneySplit();
+        final PaymentCongratsResponse.ExpenseSplit moneySplit = model.getPaymentCongratsResponse().getExpenseSplit();
         final String deepLink;
         if (moneySplit != null && (deepLink = moneySplit.getAction().getTarget()) !=  null) {
 //            new CongratsSuccessDeepLink(DeepLinkType.MONEY_SPLIT_TYPE, deepLink).track();

@@ -7,7 +7,7 @@ import com.mercadopago.android.px.internal.features.payment_congrats.model.Payme
 internal object MLBusinessMapper {
 
     @JvmStatic
-    fun map(model: PaymentCongratsResponse.MoneySplit?): MLBusinessActionCardViewData? = model?.takeIf { it.title != null }
+    fun map(model: PaymentCongratsResponse.ExpenseSplit?): MLBusinessActionCardViewData? = model?.takeIf { it.title != null }
             ?.run {
                 object : MLBusinessActionCardViewData {
                     override fun getAffordanceText() = action.label.orEmpty()

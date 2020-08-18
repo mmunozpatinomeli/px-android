@@ -26,25 +26,25 @@ public final class PaymentCongratsMock {
             new PaymentCongratsResponse.Discount("Descuentos por tu nivel", "", action, downloadApp, null, itemList);
 
         //Score
-        PaymentCongratsResponse.Score.Progress progress =
-            new PaymentCongratsResponse.Score.Progress(0.14f, "#1AC2B0", 2);
-        PaymentCongratsResponse.Score score =
-            new PaymentCongratsResponse.Score(progress, "Sumaste 1 Mercado Punto", action);
+        PaymentCongratsResponse.Loyalty.Progress progress =
+            new PaymentCongratsResponse.Loyalty.Progress(0.14f, "#1AC2B0", 2);
+        PaymentCongratsResponse.Loyalty loyalty =
+            new PaymentCongratsResponse.Loyalty(progress, "Sumaste 1 Mercado Punto", action);
 
         //Payment Methods
         ArrayList<PaymentInfo> paymentList = new ArrayList();
         paymentList.add(
             new PaymentInfo.Builder()
-                .withPaymentMethodId("account_money")
+                .withPaymentMethodId("nativa")
                 .withPaymentMethodName("Money in Mercado Pago")
-                .withPaymentMethodType(PaymentInfo.PaymentMethodType.ACCOUNT_MONEY)
+                .withPaymentMethodType(PaymentInfo.PaymentMethodType.CONSUMER_CREDITS)
                 .withPaidAmount("$100")
                 .withDiscountData("50% OFF", "$200")
                 .build()
         );
         paymentList.add(
             new PaymentInfo.Builder()
-                .withPaymentMethodId("master")
+                .withPaymentMethodId("tarshop")
                 .withPaymentMethodName("Visa")
                 .withPaymentMethodType(PaymentInfo.PaymentMethodType.CREDIT_CARD)
                 .withLastFourDigits("8020")
@@ -61,9 +61,9 @@ public final class PaymentCongratsMock {
             .withPaymentMethodInfo(paymentList.get(0))
             .withSplitPaymentMethod(paymentList.get(1))
             .withShouldShowPaymentMethod(true)
-            .withReceipt("12312312",action)
-            .withDiscount(discount)
-            .withScore(score)
+            .withReceipt("12312312",true,action)
+            .withDiscounts(discount)
+            .withLoyalty(loyalty)
             .build();
 
         return congrats;

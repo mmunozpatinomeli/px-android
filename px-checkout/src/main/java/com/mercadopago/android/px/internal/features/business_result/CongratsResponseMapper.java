@@ -15,16 +15,16 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, PaymentCong
 
     @Override
     public PaymentCongratsResponse map(CongratsResponse congratsResponse) {
-        return new PaymentCongratsResponse(getScore(congratsResponse.getScore()),
-            getDiscount(congratsResponse.getDiscount()), getMoneySplit(congratsResponse.getMoneySplit()),
+        return new PaymentCongratsResponse(getLoyalty(congratsResponse.getScore()),
+            getDiscount(congratsResponse.getDiscount()), getExpenseSplit(congratsResponse.getMoneySplit()),
             getCrossSelling(congratsResponse.getCrossSellings()),
             getAction(congratsResponse.getViewReceipt()), congratsResponse.hasCustomOrder());
     }
 
-    private PaymentCongratsResponse.Score getScore(final CongratsResponse.Score score) {
+    private PaymentCongratsResponse.Loyalty getLoyalty(final CongratsResponse.Score score) {
         if (score != null) {
-            return new PaymentCongratsResponse.Score(
-                new PaymentCongratsResponse.Score.Progress(score.getProgress().getPercentage(),
+            return new PaymentCongratsResponse.Loyalty(
+                new PaymentCongratsResponse.Loyalty.Progress(score.getProgress().getPercentage(),
                     score.getProgress().getColor(), score.getProgress().getLevel()), score.getTitle(),
                 getAction(score.getAction()));
         }
@@ -73,10 +73,10 @@ public class CongratsResponseMapper extends Mapper<CongratsResponse, PaymentCong
     }
 
     @Nullable
-    private PaymentCongratsResponse.MoneySplit getMoneySplit(@Nullable final CongratsResponse.MoneySplit moneySplit) {
+    private PaymentCongratsResponse.ExpenseSplit getExpenseSplit(@Nullable final CongratsResponse.MoneySplit moneySplit) {
         if (moneySplit != null) {
             return moneySplit == null ? null
-                : new PaymentCongratsResponse.MoneySplit(
+                : new PaymentCongratsResponse.ExpenseSplit(
                     new PaymentCongratsText(moneySplit.getTitle().getMessage(),
                         moneySplit.getTitle().getBackgroundColor(), moneySplit.getTitle().getTextColor(),
                         moneySplit.getTitle().getWeight()), getAction(moneySplit.getAction()),
