@@ -11,7 +11,6 @@ import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.ExternalFragment;
 import java.util.ArrayList;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 public class PaymentCongratsModel implements Parcelable {
     public static final Parcelable.Creator<PaymentCongratsModel> CREATOR =
@@ -38,6 +37,7 @@ public class PaymentCongratsModel implements Parcelable {
     @NonNull private final List<PaymentInfo> paymentsInfo;
     //Receipt data
     @Nullable private final String receiptId;
+    @NonNull private final boolean shouldShowReceipt;
     // Exit Buttons
     @Nullable private final ExitAction exitActionPrimary;
     @Nullable private final ExitAction exitActionSecondary;
@@ -64,6 +64,7 @@ public class PaymentCongratsModel implements Parcelable {
         bottomFragment = builder.bottomFragment;
         importantFragment = builder.importantFragment;
         paymentCongratsResponse = builder.paymentCongratsResponse;
+        shouldShowReceipt = builder.shouldShowReceipt;
     }
 
     protected PaymentCongratsModel(final Parcel in) {
@@ -74,6 +75,7 @@ public class PaymentCongratsModel implements Parcelable {
         help = in.readString();
         iconId = in.readInt();
         receiptId = in.readString();
+        shouldShowReceipt = (Boolean) in.readValue(Boolean.class.getClassLoader());
         exitActionPrimary = in.readParcelable(ExitAction.class.getClassLoader());
         exitActionSecondary = in.readParcelable(ExitAction.class.getClassLoader());
         statementDescription = in.readString();
@@ -99,6 +101,7 @@ public class PaymentCongratsModel implements Parcelable {
         dest.writeString(help);
         dest.writeInt(iconId);
         dest.writeString(receiptId);
+        dest.writeValue(shouldShowReceipt);
         dest.writeParcelable(exitActionPrimary, flags);
         dest.writeParcelable(exitActionSecondary, flags);
         dest.writeString(statementDescription);
@@ -110,7 +113,7 @@ public class PaymentCongratsModel implements Parcelable {
         dest.writeParcelable(paymentCongratsResponse, flags);
     }
 
-    @NotNull
+    @NonNull
     public String getTitle() {
         return title;
     }
@@ -120,7 +123,7 @@ public class PaymentCongratsModel implements Parcelable {
         return subtitle;
     }
 
-    @NotNull
+    @NonNull
     public String getImageUrl() {
         return imageUrl;
     }
@@ -134,9 +137,13 @@ public class PaymentCongratsModel implements Parcelable {
         return iconId;
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     public String getReceiptId() {
         return receiptId;
+    }
+
+    public boolean getShouldShowReceipt() {
+        return shouldShowReceipt;
     }
 
     @Nullable
@@ -231,6 +238,7 @@ public class PaymentCongratsModel implements Parcelable {
         /* default */ List<PaymentInfo> paymentsInfo = new ArrayList<>();
 
         /* default */ String receiptId;
+        /* default */ boolean shouldShowReceipt = false;
 
         // Exit Buttons
         /* default */ ExitAction exitActionPrimary;
@@ -308,12 +316,14 @@ public class PaymentCongratsModel implements Parcelable {
          * If value is set, then receipt view will appear.
          *
          * @param receiptId the receipt id to be shown.
+         * @param shouldShowReceipt if the receipt should be drawn, default value is "false"
          * @param receiptAction a button that takes you to the payment receipt
          * @return builder
          */
-        public Builder withReceipt(final String receiptId, final PaymentCongratsResponse.Action receiptAction) {
+        public Builder withReceipt(final String receiptId, final boolean shouldShowReceipt, final PaymentCongratsResponse.Action receiptAction) {
             this.receiptId = receiptId;
             this.receiptAction = receiptAction;
+            this.shouldShowReceipt = shouldShowReceipt;
             return this;
         }
 
