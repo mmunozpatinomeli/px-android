@@ -9,8 +9,6 @@ import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PaymentData;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PaymentCongratsModelMapper {
 
@@ -30,12 +28,16 @@ public class PaymentCongratsModelMapper {
             .withCrossSelling(paymentCongratsResponse.getCrossSellings())
             .withHeader(businessPayment.getTitle(),businessPayment.getImageUrl())
             .withShouldShowPaymentMethod(businessPayment.shouldShowPaymentMethod())
-            .withIconId(businessPayment.getIcon())
-            .withPaymentMethodInfo(getPaymentsInfo(businessPaymentModel.getPaymentResult().getPaymentDataList(),
-                businessPaymentModel.getCurrency()).get(0))
-            .withPaymentMethodInfo(getPaymentsInfo(businessPaymentModel.getPaymentResult().getPaymentDataList(),
-                businessPaymentModel.getCurrency()).get(1));
+            .withIconId(businessPayment.getIcon());
 
+        if (!businessPaymentModel.getPaymentResult().getPaymentDataList().isEmpty()) {
+            builder.withPaymentMethodInfo(getPaymentsInfo(businessPaymentModel.getPaymentResult().getPaymentDataList().get(0),
+                businessPaymentModel.getCurrency()));
+        }
+        if (businessPaymentModel.getPaymentResult().getPaymentDataList().size() > 1) {
+            builder.withPaymentMethodInfo(getPaymentsInfo(businessPaymentModel.getPaymentResult().getPaymentDataList().get(1),
+                businessPaymentModel.getCurrency()));
+        }
         if (businessPayment.getPrimaryAction() != null && businessPayment.getPrimaryAction().getName() != null) {
             builder.withFooterMainAction(businessPayment.getPrimaryAction().getName(),
                 businessPayment.getPrimaryAction().getResCode());
@@ -81,9 +83,9 @@ public class PaymentCongratsModelMapper {
         return builder.build();
     }
 
-    private List<PaymentInfo> getPaymentsInfo(final Iterable<PaymentData> paymentDataList, final Currency currency) {
-        final List<PaymentInfo> paymentsInfoList = new ArrayList<>();
-        for (final PaymentData paymentData : paymentDataList) {
+    private PaymentInfo getPaymentsInfo(final PaymentData paymentData, final Currency currency) {
+//        final List<PaymentInfo> paymentsInfoList = new ArrayList<>();
+//        for (final PaymentData paymentData : paymentDataList) {
             final PaymentInfo.Builder paymentInfo = new PaymentInfo.Builder()
                 .withPaymentMethodType(
                     PaymentInfo.PaymentMethodType.fromName(paymentData.getPaymentMethod().getPaymentTypeId()))
@@ -101,9 +103,11 @@ public class PaymentCongratsModelMapper {
                     getPrettyAmount(currency, paymentData.getPayerCost().getTotalAmount()),
                     paymentData.getPayerCost().getInstallmentRate());
             }
-            paymentsInfoList.add(paymentInfo.build());
-        }
-        return paymentsInfoList;
+
+            return paymentInfo.build();
+//            paymentsInfoList.add(paymentInfo.build());
+//        }
+//        return paymentsInfoList;
     }
 
     private String getPrettyAmount(@NonNull final Currency currency, @NonNull final BigDecimal amount) {
