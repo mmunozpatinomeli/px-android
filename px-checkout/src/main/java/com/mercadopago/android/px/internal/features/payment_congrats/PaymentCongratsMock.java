@@ -61,7 +61,7 @@ public final class PaymentCongratsMock {
             .withPaymentMethodInfo(paymentList.get(0))
             .withSplitPaymentMethod(paymentList.get(1))
             .withShouldShowPaymentMethod(true)
-            .withReceipt("12312312",true,action)
+            .withReceipt("12312312",true,null)
             .withDiscounts(discount)
             .withLoyalty(loyalty)
             .build();
