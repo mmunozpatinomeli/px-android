@@ -62,7 +62,6 @@ public class PaymentCongratsModel implements Parcelable {
     //Internal PX Tracking data
     @Nullable private final Long paymentId;
     @NonNull private final PXPaymentCongratsTracking pxPaymentCongratsTracking;
-    @NonNull private final String flow;
     @NonNull private final String paymentStatus;
     @NonNull private final PaymentData paymentData;
     @Nullable private final BigDecimal discountCouponsAmount;
@@ -85,7 +84,6 @@ public class PaymentCongratsModel implements Parcelable {
         bottomFragment = builder.bottomFragment;
         importantFragment = builder.importantFragment;
         paymentCongratsResponse = builder.paymentCongratsResponse;
-        flow = builder.flow;
         paymentStatus = builder.paymentStatus;
         paymentData = builder.paymentData;
         discountCouponsAmount = builder.discountCouponsAmount;
@@ -115,7 +113,6 @@ public class PaymentCongratsModel implements Parcelable {
         bottomFragment = in.readParcelable(ExternalFragment.class.getClassLoader());
         importantFragment = in.readParcelable(ExternalFragment.class.getClassLoader());
         paymentCongratsResponse = in.readParcelable(PaymentCongratsResponse.class.getClassLoader());
-        flow = in.readString();
         paymentStatus = in.readString();
         paymentData = (PaymentData) in.readSerializable();
         if (in.readByte() == 0) {
@@ -156,7 +153,6 @@ public class PaymentCongratsModel implements Parcelable {
         dest.writeParcelable(bottomFragment, flags);
         dest.writeParcelable(importantFragment, flags);
         dest.writeParcelable(paymentCongratsResponse, flags);
-        dest.writeString(flow);
         dest.writeString(paymentStatus);
         dest.writeSerializable(paymentData);
         if (discountCouponsAmount == null) {
@@ -275,11 +271,6 @@ public class PaymentCongratsModel implements Parcelable {
     }
 
     @NonNull
-    public String getFlow() {
-        return flow;
-    }
-
-    @NonNull
     public String getPaymentStatus() {
         return paymentStatus;
     }
@@ -362,7 +353,6 @@ public class PaymentCongratsModel implements Parcelable {
         //Internal PX Tracking data
         /* default */ Long paymentId;
         /* default */ PXPaymentCongratsTracking pxPaymentCongratsTracking;
-        /* default */ String flow;
         /* default */ String paymentStatus;
         /* default */ PaymentData paymentData;
         /* default */ BigDecimal discountCouponsAmount;
@@ -651,15 +641,6 @@ public class PaymentCongratsModel implements Parcelable {
 
         public Builder withTracking(@NonNull final PXPaymentCongratsTracking tracking) {
             pxPaymentCongratsTracking = tracking;
-            return this;
-        }
-
-        /**
-         * @param flow the name of the flow building the congrats (e.g "buyer_qr")
-         * @return builder with the added String
-         */
-        /* default */ Builder withFlow(final String flow) {
-            this.flow = flow;
             return this;
         }
 

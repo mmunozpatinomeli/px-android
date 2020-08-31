@@ -9,7 +9,6 @@ import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
-import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.core.internal.MercadoPagoCardStorage;
 import com.mercadopago.android.px.core.internal.TrackingRepositoryModelMapper;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
@@ -36,6 +35,8 @@ import com.mercadopago.android.px.internal.datasource.cache.Cache;
 import com.mercadopago.android.px.internal.datasource.cache.InitCacheCoordinator;
 import com.mercadopago.android.px.internal.datasource.cache.InitDiskCache;
 import com.mercadopago.android.px.internal.datasource.cache.InitMemCache;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PXPaymentCongratsTracking;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModel;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
@@ -150,6 +151,15 @@ public final class Session extends ApplicationModule {
 
     public void init(@NonNull final MercadoPagoCardStorage mercadoPagoCardStorage) {
         initialized = true;
+    }
+
+    public void init(@NonNull final PaymentCongratsModel paymentCongratsModel) {
+        initialized = true;
+        final PXPaymentCongratsTracking trackingData = paymentCongratsModel.getPxPaymentCongratsTracking();
+        configurationModule.getTrackingRepository().reset();
+        configurationModule.getTrackingRepository().configure(
+            new TrackingRepository.Model(trackingData.getSessionId(), trackingData.getFlow(),
+                trackingData.getFlowExtraInfo()));
     }
 
     public boolean isInitialized() {

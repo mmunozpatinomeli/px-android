@@ -6,6 +6,8 @@ import com.mercadopago.android.px.internal.features.payment_congrats.model.Payme
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentInfo;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class PaymentCongratsMock {
 
@@ -18,7 +20,11 @@ public final class PaymentCongratsMock {
         // Discounts
         ArrayList<PaymentCongratsResponse.Discount.Item> itemList = new ArrayList();
         for (int i = 0; i <= 8; i++) {
-            PaymentCongratsResponse.Discount.Item discountItem = new PaymentCongratsResponse.Discount.Item("Hasta","20% OFF","https://mla-s1-p.mlstatic.com/952848-MLA41109062105_032020-O.jpg", "mercadopago://discount_center_payers/detail?campaign_id\\u003d1048784\\u0026user_level\\u003d3\\u0026mcc\\u003d561013\\u0026distance\\u003d256\\u0026coupon_used\\u003dfalse\\u0026status\\u003dFULL\\u0026store_id\\u003d30188107\\u0026sections\\u003d%5B%7B%22id%22%3A%22header%22%2C%22type%22%3A%22header%22%2C%22content%22%3A%7B%22logo%22%3A%22https%3A%2F%2Fmla-s1-p.mlstatic.com%2F952848-MLA41109062105_032020-O.jpg%22%2C%22title%22%3A%2220%25%20OFF%22%2C%22subtitle%22%3A%22El%20Noble%22%2C%22level%22%3A%7B%22icon%22%3A%22discount_payers_black_check%22%2C%22label%22%3A%22NIVEL%201%22%2C%22format%22%3A%7B%22text_color%22%3A%22%23000000%22%2C%22background_color%22%3A%22%23EDEDED%22%7D%7D%7D%7D%5D#from\\u003d/px/congrats","1048784");
+            PaymentCongratsResponse.Discount.Item discountItem =
+                new PaymentCongratsResponse.Discount.Item("Hasta", "20% OFF",
+                    "https://mla-s1-p.mlstatic.com/952848-MLA41109062105_032020-O.jpg",
+                    "mercadopago://discount_center_payers/detail?campaign_id\\u003d1048784\\u0026user_level\\u003d3\\u0026mcc\\u003d561013\\u0026distance\\u003d256\\u0026coupon_used\\u003dfalse\\u0026status\\u003dFULL\\u0026store_id\\u003d30188107\\u0026sections\\u003d%5B%7B%22id%22%3A%22header%22%2C%22type%22%3A%22header%22%2C%22content%22%3A%7B%22logo%22%3A%22https%3A%2F%2Fmla-s1-p.mlstatic.com%2F952848-MLA41109062105_032020-O.jpg%22%2C%22title%22%3A%2220%25%20OFF%22%2C%22subtitle%22%3A%22El%20Noble%22%2C%22level%22%3A%7B%22icon%22%3A%22discount_payers_black_check%22%2C%22label%22%3A%22NIVEL%201%22%2C%22format%22%3A%7B%22text_color%22%3A%22%23000000%22%2C%22background_color%22%3A%22%23EDEDED%22%7D%7D%7D%7D%5D#from\\u003d/px/congrats",
+                    "1048784");
             itemList.add(discountItem);
         }
         PaymentCongratsResponse.Action action = new PaymentCongratsResponse
@@ -51,28 +57,36 @@ public final class PaymentCongratsMock {
                 .withPaymentMethodName("Visa")
                 .withPaymentMethodType(PaymentInfo.PaymentMethodType.CREDIT_CARD)
                 .withLastFourDigits("8020")
-                .withPaidAmount( "$100")
+                .withPaidAmount("$100")
                 .withInstallmentsData(3, "$39,90", "$119,70", BigDecimal.valueOf(19.71))
                 .build()
         );
-
+        final Map<String, Object> flowExtraInfo = new HashMap<>();
+        flowExtraInfo.put("collectorId", 7862l);
+        flowExtraInfo.put("userName", "Niko");
+        flowExtraInfo.put("isActivated", true);
+        flowExtraInfo.put("bigDecimal", 125.578);
         PXPaymentCongratsTracking tracking = new PXPaymentCongratsTracking(
             "",
             "ARS",
             "paymentStatusDetail",
             12313133l,
-            BigDecimal.valueOf(15.2)
+            BigDecimal.valueOf(15.2),
+            flowExtraInfo,
+            "instore/buyer_qr",
+            "43242fasdf4"
         );
 
         //Congrats
         PaymentCongratsModel congrats = new PaymentCongratsModel.Builder()
             .withCongratsType(PaymentCongratsModel.CongratsType.APPROVED)
-            .withHeader("Payment Congrats Example","https://www.jqueryscript.net/images/Simplest-Responsive-jQuery-Image-Lightbox-Plugin-simple-lightbox.jpg")
+            .withHeader("Payment Congrats Example",
+                "https://www.jqueryscript.net/images/Simplest-Responsive-jQuery-Image-Lightbox-Plugin-simple-lightbox.jpg")
             .withFooterSecondaryAction("Continuar", 13)
             .withPaymentMethodInfo(paymentList.get(0))
             .withSplitPaymentMethod(paymentList.get(1))
             .withShouldShowPaymentMethod(true)
-            .withReceipt(PAYMENT_ID,true,null)
+            .withReceipt(PAYMENT_ID, true, null)
             .withDiscounts(discount)
             .withLoyalty(loyalty)
             .withTracking(tracking)

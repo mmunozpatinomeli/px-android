@@ -29,12 +29,17 @@ public class PaymentCongratsModelMapper {
             new CongratsResponseMapper().map(businessPaymentModel.getCongratsResponse());
         final BusinessPayment businessPayment = businessPaymentModel.getPayment();
         final PXPaymentCongratsTracking tracking = new PXPaymentCongratsTracking(
-            businessPaymentModel.getPaymentResult().getPaymentData().getCampaign() != null ? businessPaymentModel.getPaymentResult().getPaymentData().getCampaign().getId() : "",
+            businessPaymentModel.getPaymentResult().getPaymentData().getCampaign() != null ? businessPaymentModel
+                .getPaymentResult().getPaymentData().getCampaign().getId() : "",
             businessPaymentModel.getCurrency().getId(),
             businessPayment.getPaymentStatusDetail(),
             businessPaymentModel.getPaymentResult().getPaymentId(),
             Session.getInstance().getConfigurationModule().getPaymentSettings().getCheckoutPreference()
-                .getTotalAmount());
+                .getTotalAmount(),
+            Session.getInstance().getConfigurationModule().getTrackingRepository().getFlowDetail(),
+            Session.getInstance().getConfigurationModule().getTrackingRepository().getFlowId(),
+            Session.getInstance().getConfigurationModule().getTrackingRepository().getSessionId()
+        );
         final PaymentCongratsModel.Builder builder = new PaymentCongratsModel.Builder()
             .withTracking(tracking)
             .withPaymentStatus(getMappedResult(businessPaymentModel.getPaymentResult()))
