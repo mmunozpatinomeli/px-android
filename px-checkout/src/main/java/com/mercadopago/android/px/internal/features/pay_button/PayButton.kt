@@ -10,7 +10,7 @@ import com.mercadopago.android.px.tracking.internal.model.ConfirmData
 
 interface PayButton {
 
-    interface View : ExplodingFragment.ExplodingAnimationListener {
+    interface View : ExplodingFragment.Handler {
         fun isExploding(): Boolean
         fun stimulate()
         fun enable()

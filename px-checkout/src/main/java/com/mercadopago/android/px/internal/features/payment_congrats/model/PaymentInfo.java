@@ -22,8 +22,8 @@ public class PaymentInfo implements Parcelable {
     };
     @NonNull public final String rawAmount;
     @NonNull public final String paymentMethodName;
+    @Nullable public final String iconUrl;
     @Nullable public final String lastFourDigits;
-    @NonNull public final String paymentMethodId;
     @NonNull public final PaymentMethodType paymentMethodType;
     @NonNull public final String paidAmount;
     @Nullable public final String discountName;
@@ -37,8 +37,8 @@ public class PaymentInfo implements Parcelable {
     protected PaymentInfo(final Builder builder) {
         rawAmount = builder.rawAmount;
         paymentMethodName = builder.paymentMethodName;
+        iconUrl = builder.iconUrl;
         lastFourDigits = builder.lastFourDigits;
-        paymentMethodId = builder.paymentMethodId;
         paymentMethodType = builder.paymentMethodType;
         paidAmount = builder.paidAmount;
         discountName = builder.discountName;
@@ -53,8 +53,8 @@ public class PaymentInfo implements Parcelable {
     protected PaymentInfo(final Parcel in) {
         rawAmount = in.readString();
         paymentMethodName = in.readString();
+        iconUrl = in.readString();
         lastFourDigits = in.readString();
-        paymentMethodId = in.readString();
         paymentMethodType = PaymentMethodType.values()[in.readInt()];
         paidAmount = in.readString();
         discountName = in.readString();
@@ -79,8 +79,8 @@ public class PaymentInfo implements Parcelable {
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(rawAmount);
         dest.writeString(paymentMethodName);
+        dest.writeString(iconUrl);
         dest.writeString(lastFourDigits);
-        dest.writeString(paymentMethodId);
         dest.writeInt(paymentMethodType.ordinal());
         dest.writeString(paidAmount);
         dest.writeString(discountName);
@@ -128,8 +128,8 @@ public class PaymentInfo implements Parcelable {
     public static class Builder {
         /* default */ String rawAmount;
         /* default */ String paymentMethodName;
+        /* default */ String iconUrl;
         /* default */ String lastFourDigits;
-        /* default */ String paymentMethodId;
         /* default */ PaymentMethodType paymentMethodType;
         /* default */ String paidAmount;
         /* default */ String discountName;
@@ -161,6 +161,17 @@ public class PaymentInfo implements Parcelable {
         }
 
         /**
+         * Adds the url of the payment method's icon used to pay
+         *
+         * @param iconUrl the url of the payment method's icon
+         * @return Builder
+         */
+        public Builder withIconUrl(final String iconUrl) {
+            this.iconUrl = iconUrl;
+            return this;
+        }
+
+        /**
          * Adds the total amount actually paid by the user
          *
          * @param paidAmount the amount actually paid by the user
@@ -179,17 +190,6 @@ public class PaymentInfo implements Parcelable {
          */
         public Builder withLastFourDigits(final String lastFourDigits) {
             this.lastFourDigits = lastFourDigits;
-            return this;
-        }
-
-        /**
-         * Adds the id of the payment method used to pay
-         *
-         * @param paymentMethodId the id of the payment method
-         * @return Builder
-         */
-        public Builder withPaymentMethodId(final String paymentMethodId) {
-            this.paymentMethodId = paymentMethodId;
             return this;
         }
 

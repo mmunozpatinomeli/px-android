@@ -1,19 +1,19 @@
 package com.mercadopago.android.px.internal.view;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.extensions.ImageViewExtensionsKt;
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsText;
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentInfo;
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentResultInfo;
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.util.PaymentDataHelper;
-import com.mercadopago.android.px.internal.util.ResourceUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.Currency;
@@ -53,8 +53,7 @@ public class PaymentResultMethod extends ConstraintLayout {
     }
 
     public void setModel(@NonNull final Model model) {
-        icon.setImageResource(ResourceUtil.getIconResource(getContext(), model.paymentMethodId));
-
+        ImageViewExtensionsKt.loadOrElse(icon, model.imageUrl, R.drawable.px_generic_method);
         ViewUtils.loadOrGone(getDescription(model), description);
         ViewUtils.loadOrHide(View.GONE, model.paymentMethodDescription, paymentMethodStatement);
         ViewUtils.loadOrGone(getStatement(model), statement);
@@ -95,9 +94,9 @@ public class PaymentResultMethod extends ConstraintLayout {
     }
 
     public static final class Model {
-
         @NonNull /* default */ final String paymentMethodId;
         @NonNull /* default */ final String paymentMethodName;
+        @Nullable /* default */ final String imageUrl;
         @NonNull /* default */ final PaymentCongratsText paymentMethodDescription;
         @NonNull /* default */ final String paymentTypeId;
         @NonNull /* default */ final PaymentResultAmount.Model amountModel;
@@ -108,6 +107,7 @@ public class PaymentResultMethod extends ConstraintLayout {
         /* default */ Model(@NonNull final Builder builder) {
             paymentMethodId = builder.paymentMethodId;
             paymentMethodName = builder.paymentMethodName;
+            imageUrl = builder.imageUrl;
             paymentMethodDescription = builder.paymentMethodDescription;
             paymentTypeId = builder.paymentTypeId;
             amountModel = builder.amountModel;
@@ -116,11 +116,12 @@ public class PaymentResultMethod extends ConstraintLayout {
             info = builder.info;
         }
 
-        public static Model with(@NonNull final PaymentData paymentData, @NonNull final Currency currency) {
+        public static Model with(@Nullable final String imageUrl, @NonNull final PaymentData paymentData,
+            @NonNull final Currency currency) {
             final PaymentInfo.Builder paymentInfoBuilder = new PaymentInfo.Builder()
                 .withLastFourDigits(paymentData.getToken() != null ? paymentData.getToken().getLastFourDigits() : null)
-                .withPaymentMethodId(paymentData.getPaymentMethod().getId())
                 .withPaymentMethodName(paymentData.getPaymentMethod().getName())
+                .withIconUrl(imageUrl)
                 .withPaymentMethodType(
                     PaymentInfo.PaymentMethodType.fromName(paymentData.getPaymentMethod().getPaymentTypeId()))
                 .withPaidAmount(getPrettyAmount(currency,
@@ -135,7 +136,8 @@ public class PaymentResultMethod extends ConstraintLayout {
 
                 if (paymentData.getPaymentMethod().getDisplayInfo().getDescription() != null) {
                     final PaymentCongratsText description = new PaymentCongratsText(
-                        paymentData.getPaymentMethod().getDisplayInfo().getDescription() != null ? paymentData.getPaymentMethod().getDisplayInfo().getDescription().getMessage(): "",
+                        paymentData.getPaymentMethod().getDisplayInfo().getDescription() != null ? paymentData
+                            .getPaymentMethod().getDisplayInfo().getDescription().getMessage() : "",
                         paymentData.getPaymentMethod().getDisplayInfo().getDescription().getBackgroundColor(),
                         paymentData.getPaymentMethod().getDisplayInfo().getDescription().getTextColor(),
                         paymentData.getPaymentMethod().getDisplayInfo().getDescription().getWeight()
@@ -146,13 +148,14 @@ public class PaymentResultMethod extends ConstraintLayout {
             }
             if (paymentData.getDiscount() != null) {
                 paymentInfoBuilder
-                    .withDiscountData(paymentData.getDiscount().getName(), getPrettyAmount(currency,paymentData.getRawAmount()));
+                    .withDiscountData(paymentData.getDiscount().getName(),
+                        getPrettyAmount(currency, paymentData.getRawAmount()));
             }
 
             if (paymentData.getPayerCost() != null) {
                 paymentInfoBuilder.withInstallmentsData(paymentData.getPayerCost().getInstallments(),
-                    getPrettyAmount(currency,paymentData.getPayerCost().getInstallmentAmount()),
-                    getPrettyAmount(currency,paymentData.getPayerCost().getTotalAmount()),
+                    getPrettyAmount(currency, paymentData.getPayerCost().getInstallmentAmount()),
+                    getPrettyAmount(currency, paymentData.getPayerCost().getTotalAmount()),
                     paymentData.getPayerCost().getInstallmentRate());
             }
             return with(paymentInfoBuilder.build(), null);
@@ -176,7 +179,8 @@ public class PaymentResultMethod extends ConstraintLayout {
             final PaymentCongratsText description =
                 paymentInfo.description != null ? paymentInfo.description : PaymentCongratsText.EMPTY;
 
-            return new Builder(paymentInfo.paymentMethodId, paymentInfo.paymentMethodName, description,
+            return new Builder( paymentInfo.paymentMethodName, paymentInfo.iconUrl,
+                description,
                 paymentInfo.paymentMethodType.value)
                 .setLastFourDigits(paymentInfo.lastFourDigits)
                 .setStatement(statement)
@@ -186,6 +190,7 @@ public class PaymentResultMethod extends ConstraintLayout {
         }
 
         public static class Builder {
+            @Nullable /* default */ String imageUrl;
             @NonNull /* default */ final PaymentCongratsText paymentMethodDescription;
             @NonNull /* default */ String paymentMethodId;
             @NonNull /* default */ String paymentMethodName;
@@ -195,10 +200,11 @@ public class PaymentResultMethod extends ConstraintLayout {
             @Nullable /* default */ String statement;
             @Nullable /* default */ PaymentResultInfo info;
 
-            public Builder(@NonNull final String paymentMethodId, @NonNull final String paymentMethodName,
+            public Builder(@NonNull final String paymentMethodName,
+                @Nullable final String imageUrl,
                 @NonNull final PaymentCongratsText paymentMethodDescription, @NonNull final String paymentTypeId) {
-                this.paymentMethodId = paymentMethodId;
                 this.paymentMethodName = paymentMethodName;
+                this.imageUrl = imageUrl;
                 this.paymentMethodDescription = paymentMethodDescription;
                 this.paymentTypeId = paymentTypeId;
             }

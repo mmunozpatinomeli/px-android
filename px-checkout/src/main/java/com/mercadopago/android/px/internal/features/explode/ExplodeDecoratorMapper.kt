@@ -13,8 +13,8 @@ class ExplodeDecoratorMapper : Mapper<PaymentModel, ExplodeDecorator>() {
         return when {
             model.remedies.hasRemedies() -> ExplodeDecorator.from(RemediesModel.DECORATOR)
             payment is BusinessPayment -> ExplodeDecorator.from(PaymentResultType.from(payment.decorator))
-            else -> run {
-                val decorator = PaymentResultViewModelFactory.createPaymentResultDecorator(payment!!)
+            else -> {
+                val decorator = PaymentResultViewModelFactory.createPaymentResultDecorator(model.paymentResult)
                 ExplodeDecorator(decorator.primaryColor, decorator.statusIcon)
             }
         }

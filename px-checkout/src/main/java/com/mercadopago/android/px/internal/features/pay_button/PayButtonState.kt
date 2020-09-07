@@ -23,6 +23,6 @@ internal open class UIResult : PayButtonState() {
     data class NoCongratsResult(val model : PaymentModel) : UIResult()
 }
 
-internal open class UIError : PayButtonState() {
-    data class ConnectionError(val error: MercadoPagoError) : UIError()
+internal open class UIError(val message: String, val detail: String) : PayButtonState() {
+    class ConnectionError(error: MercadoPagoError) : UIError(error.message.orEmpty(), error.errorDetail.orEmpty())
 }

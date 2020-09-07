@@ -12,14 +12,16 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.google.android.material.snackbar.Snackbar
+import com.mercadolibre.android.andesui.snackbar.AndesSnackbar
+import com.mercadolibre.android.andesui.snackbar.duration.AndesSnackbarDuration
+import com.mercadolibre.android.andesui.snackbar.type.AndesSnackbarType
 import com.mercadolibre.android.ui.widgets.MeliButton
-import com.mercadolibre.android.ui.widgets.MeliSnackbar
 import com.mercadopago.android.px.R
 import com.mercadopago.android.px.addons.BehaviourProvider
 import com.mercadopago.android.px.addons.internal.SecurityValidationHandler
 import com.mercadopago.android.px.addons.model.SecurityValidationData
 import com.mercadopago.android.px.internal.di.Session
+import com.mercadopago.android.px.internal.extensions.orIfEmpty
 import com.mercadopago.android.px.internal.features.Constants
 import com.mercadopago.android.px.internal.features.SecurityCodeActivity
 import com.mercadopago.android.px.internal.features.dummy_result.DummyResultActivity
@@ -35,7 +37,6 @@ import com.mercadopago.android.px.internal.view.OnSingleClickListener
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction
 import com.mercadopago.android.px.model.Card
 import com.mercadopago.android.px.model.PaymentRecovery
-import com.mercadopago.android.px.model.exceptions.MercadoPagoError
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker
 import com.mercadopago.android.px.tracking.internal.model.Reason
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel as ButtonConfig
@@ -99,10 +100,10 @@ class PayButtonFragment : Fragment(), PayButton.View, SecurityValidationHandler 
             is UIProgress.ButtonLoadingFinished -> finishLoading(stateUI.explodeDecorator)
             is UIProgress.ButtonLoadingCanceled -> cancelLoading()
             is UIResult.VisualProcessorResult -> PaymentProcessorActivity.start(this, REQ_CODE_PAYMENT_PROCESSOR)
-            is UIError.ConnectionError -> showSnackBar(stateUI.error)
+            is UIError.ConnectionError -> showSnackBar(stateUI.message)
             is UIResult.PaymentResult -> PaymentResultActivity.start(this, REQ_CODE_CONGRATS, stateUI.model)
-            is UIResult.BusinessPaymentResult -> PaymentCongrats.show(PaymentCongratsModelMapper().map(stateUI.model), activity, REQ_CODE_CONGRATS)
             is UIResult.NoCongratsResult -> DummyResultActivity.start(this, REQ_CODE_CONGRATS, stateUI.model)
+            is UIResult.BusinessPaymentResult -> PaymentCongrats.show(PaymentCongratsModelMapper().map(stateUI.model), activity, REQ_CODE_CONGRATS)
         }
     }
 
@@ -127,9 +128,11 @@ class PayButtonFragment : Fragment(), PayButton.View, SecurityValidationHandler 
     }
 
     @SuppressLint("Range")
-    private fun showSnackBar(error: MercadoPagoError) {
+    private fun showSnackBar(error: String) {
         view?.let {
-            MeliSnackbar.make(it, error.message, Snackbar.LENGTH_LONG, MeliSnackbar.SnackbarType.ERROR).show()
+            it.context?.let { context ->
+                AndesSnackbar(context, it, AndesSnackbarType.ERROR, error.orIfEmpty(context.getString(R.string.px_error_title)), AndesSnackbarDuration.LONG).show()
+            }
         }
     }
 
@@ -195,9 +198,8 @@ class PayButtonFragment : Fragment(), PayButton.View, SecurityValidationHandler 
                     FrictionEventTracker.with("/px_checkout/pay_button_loading", FrictionEventTracker.Id.GENERIC,
                             FrictionEventTracker.Style.SCREEN, emptyMap<String, String>())
                 } else {
-                    val explodeParams = ExplodingFragment.getParams(button, buttonConfig.getButtonProgressText(it),
-                            paymentTimeout)
-                    val explodingFragment = ExplodingFragment.newInstance(explodeParams)
+                    val explodingFragment = ExplodingFragment.newInstance(
+                        buttonConfig.getButtonProgressText(it), paymentTimeout)
                     childFragmentManager.beginTransaction()
                             .add(R.id.exploding_frame, explodingFragment, ExplodingFragment.TAG)
                             .commitNowAllowingStateLoss()
@@ -247,6 +249,8 @@ class PayButtonFragment : Fragment(), PayButton.View, SecurityValidationHandler 
     override fun isExploding(): Boolean {
         return FragmentUtil.isFragmentVisible(childFragmentManager, ExplodingFragment.TAG)
     }
+
+    override fun getParentView() = button
 
     companion object {
         const val TAG = "TAG_BUTTON_FRAGMENT"

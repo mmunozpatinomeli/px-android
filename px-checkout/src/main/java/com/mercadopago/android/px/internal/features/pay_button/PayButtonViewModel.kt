@@ -44,10 +44,11 @@ internal class PayButtonViewModel(
     private val productIdProvider: ProductIdProvider,
     private val connectionHelper: ConnectionHelper,
     private val paymentSettingRepository: PaymentSettingRepository,
-    customTextsRepository: CustomTextsRepository) : BaseViewModel(), PayButton.ViewModel {
+    customTextsRepository: CustomTextsRepository,
+    payButtonViewModelMapper: PayButtonViewModelMapper) : BaseViewModel(), PayButton.ViewModel {
 
     val buttonTextLiveData = MutableLiveData<ButtonConfig>()
-    private var buttonConfig: ButtonConfig = PayButtonViewModelMapper().map(customTextsRepository.customTexts)
+    private var buttonConfig: ButtonConfig = payButtonViewModelMapper.map(customTextsRepository.customTexts)
 
     init {
         buttonTextLiveData.value = buttonConfig

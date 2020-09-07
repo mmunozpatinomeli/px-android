@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:background="#B3FFFFFF"
-             android:layout_height="match_parent"
-             android:clickable="true">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="#B3FFFFFF"
+    android:layout_height="match_parent"
+    android:clickable="true">
 
-
-
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/cho_loading_buy_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,7 +17,7 @@
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:layout_marginLeft="@dimen/px_s_margin"
             android:layout_marginRight="@dimen/px_s_margin"
             android:indeterminate="false"
@@ -31,15 +29,15 @@
             android:id="@+id/cho_loading_buy_progress_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textColor="#ffffff"
-            android:textSize="@dimen/button_text_size"/>
+            android:layout_gravity="center"
+            android:textSize="@dimen/ui_fontsize_medium"
+            android:textColor="#ffffff"/>
 
         <ImageView
             android:id="@+id/cho_loading_buy_circular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:src="@drawable/px_white_circle"
             android:visibility="gone"
             tools:visibility="visible"/>
@@ -49,12 +47,12 @@
             android:id="@+id/cho_loading_buy_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:scaleType="centerInside"
             android:visibility="gone"
             tools:src="@drawable/px_badge_check_icon"
             tools:visibility="visible"/>
-    </RelativeLayout>
+    </FrameLayout>
 
     <View
         android:id="@+id/cho_loading_buy_reveal"

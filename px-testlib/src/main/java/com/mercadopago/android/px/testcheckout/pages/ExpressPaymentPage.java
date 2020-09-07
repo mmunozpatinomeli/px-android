@@ -8,7 +8,9 @@ import com.mercadopago.android.testlib.pages.PageObject;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.allOf;
 
 public class ExpressPaymentPage extends PageObject<CheckoutValidator> {
 
@@ -26,7 +28,7 @@ public class ExpressPaymentPage extends PageObject<CheckoutValidator> {
     }
 
     public SecurityCodeToResultsPage pressConfirmButtonToCvv() {
-        onView(withId(R.id.confirm_button)).perform(click());
+        onView(allOf(withId(R.id.confirm_button), isDisplayed())).perform(click());
         return new SecurityCodeToResultsPage(validator);
     }
 
@@ -47,19 +49,19 @@ public class ExpressPaymentPage extends PageObject<CheckoutValidator> {
         return this;
     }
 
-    public ExpressPaymentPage selectPayerCostAt(int position) {
+    public ExpressPaymentPage selectPayerCostAt(final int position) {
         onView(withId(R.id.installments_recycler_view))
             .perform(RecyclerViewActions.actionOnItemAtPosition(position, click()));
         return this;
     }
 
     public CongratsPage pressConfirmButtonToCongratsPage() {
-        onView(withId(R.id.confirm_button)).perform(click());
+        onView(allOf(withId(R.id.confirm_button), isDisplayed())).perform(click());
         return new CongratsPage(validator);
     }
 
     public RejectedPage pressConfirmButtonToRejectedPage() {
-        onView(withId(R.id.confirm_button)).perform(click());
+        onView(allOf(withId(R.id.confirm_button), isDisplayed())).perform(click());
         return new RejectedPage(validator);
     }
 

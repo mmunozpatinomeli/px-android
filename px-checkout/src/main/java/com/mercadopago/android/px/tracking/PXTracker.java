@@ -6,7 +6,7 @@ import com.mercadopago.android.px.addons.internal.TrackingDefaultBehaviour;
 import com.mercadopago.android.px.addons.model.Track;
 import com.mercadopago.android.px.addons.tracking.Tracker;
 import com.mercadopago.android.px.addons.tracking.TrackerWrapper;
-import com.mercadopago.android.px.internal.tracking.TrackingRepository;
+import com.mercadopago.android.px.internal.tracking.TrackingRepositoryHelper;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,8 +57,7 @@ public final class PXTracker {
      */
     public static void setListener(@Nullable final PXTrackingListener listener,
         @NonNull final Map<String, ?> flowDetail, @Nullable final String flowName) {
-        TrackingRepository.setOLD_STATIC_FLOW_ID(flowName);
-        TrackingRepository.setOLD_STATIC_FLOW_DETAIL(flowDetail);
+        TrackingRepositoryHelper.setLegacyFlowIdAndDetail(flowName, flowDetail);
         if (listener != null) {
             TrackingDefaultBehaviour.INSTANCE.setTrackWrapper(new TrackerWrapper() {
                 @NonNull

@@ -9,26 +9,26 @@ internal class OfflineMethodItem {
     val description: Text?
     val isAdditionalInfoNeeded: Boolean
     val isOfflinePaymentTypeItem: Boolean
-        get() = description == null && iconResourceName == null
-    var iconResourceName: String?
+        get() = description == null && paymentMethodId == null
+    var imageUrl: String?
 
     constructor(name: Text) {
         this.name = name
         this.paymentMethodId = null
         this.paymentTypeId = null
         this.description = null
-        this.iconResourceName = null
+        this.imageUrl = null
         isAdditionalInfoNeeded = false
     }
 
     constructor(name: Text, paymentMethodId: String,
-        paymentTypeId: String, description: Text, iconResourceName: String,
+        paymentTypeId: String, description: Text, imageUrl: String,
         additionalInfoNeeded: Boolean) {
         this.name = name
         this.paymentMethodId = paymentMethodId
         this.paymentTypeId = paymentTypeId
         this.description = description
-        this.iconResourceName = iconResourceName
+        this.imageUrl = imageUrl
         isAdditionalInfoNeeded = additionalInfoNeeded
     }
 }

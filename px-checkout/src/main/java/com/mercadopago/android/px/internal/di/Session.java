@@ -9,7 +9,6 @@ import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
-import com.mercadopago.android.px.core.internal.MercadoPagoCardStorage;
 import com.mercadopago.android.px.core.internal.TrackingRepositoryModelMapper;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.core.ApplicationModule;
@@ -80,8 +79,6 @@ public final class Session extends ApplicationModule {
     @SuppressLint("StaticFieldLeak")
     private static Session instance;
 
-    private boolean initialized = false;
-
     // mem cache - lazy init.
     private CheckoutConfigurationModule configurationModule;
     private DiscountRepository discountRepository;
@@ -145,16 +142,9 @@ public final class Session extends ApplicationModule {
         paymentSetting.configure(paymentConfiguration);
         resolvePreference(mercadoPagoCheckout, paymentSetting);
         // end Store persistent paymentSetting
-
-        initialized = true;
-    }
-
-    public void init(@NonNull final MercadoPagoCardStorage mercadoPagoCardStorage) {
-        initialized = true;
     }
 
     public void init(@NonNull final PaymentCongratsModel paymentCongratsModel) {
-        initialized = true;
         final PXPaymentCongratsTracking trackingData = paymentCongratsModel.getPxPaymentCongratsTracking();
         configurationModule.getTrackingRepository().reset();
         configurationModule.getTrackingRepository().configure(
@@ -163,7 +153,7 @@ public final class Session extends ApplicationModule {
     }
 
     public boolean isInitialized() {
-        return initialized;
+        return configurationModule.getPaymentSettings().isPaymentConfigurationValid();
     }
 
     private void resolvePreference(@NonNull final MercadoPagoCheckout mercadoPagoCheckout,
@@ -200,7 +190,6 @@ public final class Session extends ApplicationModule {
         congratsRepository = null;
         escPaymentManager = null;
         viewModelModule = null;
-        initialized = false;
     }
 
     public InitRepository getInitRepository() {

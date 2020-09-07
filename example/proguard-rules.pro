@@ -19,7 +19,3 @@
 	*** setIdleCallback(***);
 	*** runningCallsCount();
 }
--keepclassmembers public class android.support.v7.widget.RecyclerView {
-	*** scrollToPosition(***);
-	*** findViewHolderForPosition(***);
-}

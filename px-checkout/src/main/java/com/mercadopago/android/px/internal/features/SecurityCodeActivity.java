@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -280,7 +281,7 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
 
         final MPTextView title = view.findViewById(R.id.title);
         title.setText(cvvInfo.getTitle());
-        ViewUtils.loadOrGone(cvvInfo.getMessage(), view.findViewById(R.id.message));
+        ViewUtils.loadOrGone(cvvInfo.getMessage(), (TextView) view.findViewById(R.id.message));
     }
 
     private void setSecurityCodeCardColorFilter() {

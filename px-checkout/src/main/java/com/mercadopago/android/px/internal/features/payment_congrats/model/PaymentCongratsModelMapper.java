@@ -11,6 +11,7 @@ import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.model.internal.CongratsResponse;
 import java.math.BigDecimal;
 
 public class PaymentCongratsModelMapper {
@@ -23,7 +24,8 @@ public class PaymentCongratsModelMapper {
      */
     public PaymentCongratsModel map(final BusinessPaymentModel businessPaymentModel) {
 
-        final PaymentSettingRepository paymentSettings = Session.getInstance().getConfigurationModule().getPaymentSettings();
+        final PaymentSettingRepository paymentSettings =
+            Session.getInstance().getConfigurationModule().getPaymentSettings();
 
         final PaymentCongratsResponse paymentCongratsResponse =
             new CongratsResponseMapper().map(businessPaymentModel.getCongratsResponse());
@@ -38,7 +40,8 @@ public class PaymentCongratsModelMapper {
                 .getTotalAmount(),
             Session.getInstance().getConfigurationModule().getTrackingRepository().getFlowDetail(),
             Session.getInstance().getConfigurationModule().getTrackingRepository().getFlowId(),
-            Session.getInstance().getConfigurationModule().getTrackingRepository().getSessionId()
+            Session.getInstance().getConfigurationModule().getTrackingRepository().getSessionId(),
+            businessPaymentModel.getPayment().getPaymentMethodId()
         );
         final PaymentCongratsModel.Builder builder = new PaymentCongratsModel.Builder()
             .withTracking(tracking)
@@ -59,12 +62,12 @@ public class PaymentCongratsModelMapper {
         if (!businessPaymentModel.getPaymentResult().getPaymentDataList().isEmpty()) {
             builder.withPaymentMethodInfo(
                 getPaymentsInfo(businessPaymentModel.getPaymentResult().getPaymentDataList().get(0),
-                    businessPaymentModel.getCurrency()));
+                    businessPaymentModel.getCurrency(), businessPaymentModel.getCongratsResponse()));
         }
         if (businessPaymentModel.getPaymentResult().getPaymentDataList().size() > 1) {
             builder.withPaymentMethodInfo(
                 getPaymentsInfo(businessPaymentModel.getPaymentResult().getPaymentDataList().get(1),
-                    businessPaymentModel.getCurrency()));
+                    businessPaymentModel.getCurrency(), businessPaymentModel.getCongratsResponse()));
         }
         if (businessPayment.getPrimaryAction() != null && businessPayment.getPrimaryAction().getName() != null) {
             builder.withFooterMainAction(businessPayment.getPrimaryAction().getName(),
@@ -110,14 +113,18 @@ public class PaymentCongratsModelMapper {
         return builder.build();
     }
 
-    private PaymentInfo getPaymentsInfo(final PaymentData paymentData, final Currency currency) {
+
+    private PaymentInfo getPaymentsInfo(final PaymentData paymentData, final Currency currency,
+        final CongratsResponse congratsResponse) {
         final PaymentInfo.Builder paymentInfo = new PaymentInfo.Builder()
             .withPaymentMethodType(
                 PaymentInfo.PaymentMethodType.fromName(paymentData.getPaymentMethod().getPaymentTypeId()))
-            .withPaymentMethodId(paymentData.getPaymentMethod().getId())
             .withPaymentMethodName(paymentData.getPaymentMethod().getName())
             .withPaidAmount(getPrettyAmount(currency,
-                PaymentDataHelper.getPrettyAmountToPay(paymentData)));
+                PaymentDataHelper.getPrettyAmountToPay(paymentData)))
+            .withIconUrl(
+                congratsResponse.getPaymentMethodsImages().get(paymentData.getPaymentMethod().getId()));
+
         if (paymentData.getToken() != null && paymentData.getToken().getLastFourDigits() != null) {
             paymentInfo.withLastFourDigits(paymentData.getToken().getLastFourDigits());
         }

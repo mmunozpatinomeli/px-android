@@ -12,11 +12,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -27,8 +22,12 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
@@ -37,8 +36,8 @@ public class ExplodingFragment extends Fragment {
 
     public static final String TAG = "TAG_EXPLODING_FRAGMENT";
     private static final String BUNDLE_DECORATOR = "BUNDLE_DECORATOR";
-    private static final String Y_POSITION_BUTTON = "Y_POSITION_BUTTON";
-    private static final String ARG_EXPLODING_PARAMS = "ARG_EXPLODING_PARAMS";
+    private static final String ARG_PROGRESS_TEXT = "ARG_PROGRESS_TEXT";
+    private static final String ARG_TIMEOUT = "ARG_TIMEOUT";
 
     public static final float ICON_SCALE = 3.0f;
 
@@ -49,38 +48,41 @@ public class ExplodingFragment extends Fragment {
     /* default */ View reveal;
     private TextView text;
     private ViewGroup rootView;
+    private View loadingContainer;
 
-    /* default */ ExplodeDecorator explodeDecorator;
+    /* default */ @Nullable ExplodeDecorator explodeDecorator;
+    /* default */ @Nullable Animator circularReveal;
     private int buttonHeight;
-    private int buttonLeftRightMargin;
-    private int yButtonPosition;
+    private int buttonYPosition;
     private CharSequence buttonText;
-    //TODO add loading time payment processor
     private int maxLoadingTime;
 
-    /* default */ ExplodingAnimationListener listener;
+    /* default */ @Nullable Handler handler;
+
+    @NonNull private final View.OnLayoutChangeListener layoutChangeListener =
+        (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (handler != null) {
+                updateValuesFromParentView(handler.getParentView());
+            }
+        };
 
     public boolean hasFinished() {
         return explodeDecorator == null;
     }
 
-    public interface ExplodingAnimationListener {
+    public interface Handler {
+        View getParentView();
+
         void onAnimationFinished();
     }
 
-    public static ExplodingFragment newInstance(final ExplodeParams explodeParams) {
+    public static ExplodingFragment newInstance(@NonNull final CharSequence progressText, final int timeout) {
         final ExplodingFragment explodingFragment = new ExplodingFragment();
         final Bundle bundle = new Bundle();
-        bundle.putSerializable(ARG_EXPLODING_PARAMS, explodeParams);
+        bundle.putCharSequence(ARG_PROGRESS_TEXT, progressText);
+        bundle.putInt(ARG_TIMEOUT, timeout);
         explodingFragment.setArguments(bundle);
         return explodingFragment;
-    }
-
-    public static ExplodeParams getParams(@NonNull final View button, @NonNull final CharSequence progressText,
-        final int timeout) {
-        final int[] location = new int[2];
-        button.getLocationOnScreen(location);
-        return new ExplodeParams(location[1], button.getMeasuredHeight(), location[0], progressText, timeout);
     }
 
     @Override
@@ -88,18 +90,10 @@ public class ExplodingFragment extends Fragment {
         super.onCreate(savedInstanceState);
         final Bundle args = getArguments();
         if (args != null) {
-            final ExplodeParams explodeParams = (ExplodeParams) args.getSerializable(ARG_EXPLODING_PARAMS);
-            if (explodeParams != null) {
-                final int[] parentLocation = new int[2];
-                getActivityContentView().getLocationOnScreen(parentLocation);
-                yButtonPosition = explodeParams.getyButtonPositionInPixels() - parentLocation[1];
-                buttonHeight = explodeParams.getButtonHeightInPixels();
-                buttonLeftRightMargin = explodeParams.getButtonLeftRightMarginInPixels();
-                buttonText = explodeParams.getButtonText();
-                maxLoadingTime = explodeParams.getPaymentTimeout();
-            } else {
-                throw new RuntimeException("Missing explode params");
-            }
+            buttonText = args.getCharSequence(ARG_PROGRESS_TEXT);
+            maxLoadingTime = args.getInt(ARG_TIMEOUT);
+        } else {
+            throw new RuntimeException("Missing explode params");
         }
     }
 
@@ -111,7 +105,6 @@ public class ExplodingFragment extends Fragment {
 
         if (savedInstanceState != null) {
             explodeDecorator = savedInstanceState.getParcelable(BUNDLE_DECORATOR);
-            yButtonPosition = savedInstanceState.getInt(Y_POSITION_BUTTON);
         }
 
         rootView = (ViewGroup) inflater.inflate(R.layout.px_fragment_exploding, view);
@@ -119,25 +112,25 @@ public class ExplodingFragment extends Fragment {
         icon = rootView.findViewById(R.id.cho_loading_buy_icon);
         reveal = rootView.findViewById(R.id.cho_loading_buy_reveal);
         text = rootView.findViewById(R.id.cho_loading_buy_progress_text);
+        loadingContainer = rootView.findViewById(R.id.cho_loading_buy_container);
         if (!TextUtil.isEmpty(buttonText)) {
             text.setText(buttonText);
         }
 
-        // set the initial Y to match the button clicked
-        final View loadingContainer = rootView.findViewById(R.id.cho_loading_buy_container);
-
         progressBar = rootView.findViewById(R.id.cho_loading_buy_progress);
-
-        final RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) progressBar.getLayoutParams();
-        layoutParams.height = buttonHeight;
-        layoutParams.leftMargin = buttonLeftRightMargin;
-        layoutParams.rightMargin = buttonLeftRightMargin;
-        progressBar.setLayoutParams(layoutParams);
-        adjustHeight(circle);
-        adjustHeight(icon);
-        loadingContainer.setY(yButtonPosition);
-
         progressBar.setMax(maxLoadingTime);
+
+        return null;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        rootView.addOnLayoutChangeListener(layoutChangeListener);
+
+        if (handler != null) {
+            updateValuesFromParentView(handler.getParentView());
+        }
 
         // start loading assuming the worst time possible
         animator = ObjectAnimator.ofInt(progressBar, "progress", 0, maxLoadingTime);
@@ -147,21 +140,28 @@ public class ExplodingFragment extends Fragment {
         if (explodeDecorator != null) {
             finishLoading(explodeDecorator);
         }
+    }
 
-        return null;
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (circularReveal != null) {
+            circularReveal.cancel();
+            circularReveal = null;
+        }
+        rootView.removeOnLayoutChangeListener(layoutChangeListener);
     }
 
     @Override
     public void onDestroyView() {
         final ViewGroup view = getActivityContentView();
-        view.removeViewAt(view.getChildCount()-1);
+        view.removeViewAt(view.getChildCount() - 1);
         super.onDestroyView();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         outState.putParcelable(BUNDLE_DECORATOR, explodeDecorator);
-        outState.putInt(Y_POSITION_BUTTON, yButtonPosition);
         super.onSaveInstanceState(outState);
     }
 
@@ -179,26 +179,7 @@ public class ExplodingFragment extends Fragment {
      */
     public void finishLoading(@NonNull final ExplodeDecorator explodeDecorator) {
         this.explodeDecorator = explodeDecorator;
-        if (explodeDecorator == null) {
-            throw new RuntimeException("Explode decorator can't be null");
-        }
-        // now finish the remaining loading progress
-        final int progress = progressBar.getProgress();
-        animator.cancel();
-        animator = ObjectAnimator.ofInt(progressBar, "progress", progress, maxLoadingTime);
-        animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.setDuration(getResources().getInteger(R.integer.px_long_animation_time));
-
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(final Animator animation) {
-                animator.removeListener(this);
-                if (isAdded()) {
-                    createResultAnim();
-                }
-            }
-        });
-        animator.start();
+        runIfVisibleAndReady(this::doFinishLoading);
     }
 
     /**
@@ -253,9 +234,7 @@ public class ExplodingFragment extends Fragment {
             public void onAnimationEnd(final Animator animation) {
                 animation.removeAllListeners();
                 ((ValueAnimator) animation).removeAllUpdateListeners();
-                if (isAdded()) {
-                    createResultIconAnim();
-                }
+                runIfVisibleAndReady(() -> createResultIconAnim());
             }
         });
         a.setInterpolator(new DecelerateInterpolator(2f));
@@ -293,9 +272,7 @@ public class ExplodingFragment extends Fragment {
                 @Override
                 public void onAnimationEnd(final Animator animation) {
                     animation.removeAllListeners();
-                    if (isAdded()) {
-                        createCircularReveal();
-                    }
+                    runIfVisibleAndReady(() -> createCircularReveal());
                 }
             }).start();
     }
@@ -308,51 +285,44 @@ public class ExplodingFragment extends Fragment {
         final float finalRadius = (float) Math.hypot(rootView.getWidth(), rootView.getHeight());
         final int startRadius = buttonHeight / 2;
         final int cx = (progressBar.getLeft() + progressBar.getRight()) / 2;
-        final int cy = (progressBar.getTop() + progressBar.getBottom()) / 2 + yButtonPosition;
+        final int cy = (progressBar.getTop() + progressBar.getBottom()) / 2 + buttonYPosition;
 
-        //try to avoid reveal detached view
-        reveal.post(() -> {
+        final int endColor = explodeDecorator.getPrimaryColor(getContext());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            circularReveal = ViewAnimationUtils.createCircularReveal(reveal, cx, cy, startRadius, finalRadius);
+        } else {
+            circularReveal = ObjectAnimator.ofFloat(reveal, "alpha", 0, 1);
+        }
+        circularReveal.setDuration(getResources().getInteger(R.integer.px_long_animation_time));
+        circularReveal.setStartDelay(getResources().getInteger(R.integer.px_long_animation_time));
+        circularReveal.setInterpolator(new AccelerateInterpolator());
+        circularReveal.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(final Animator animation) {
+                circle.setVisibility(View.GONE);
+                icon.setVisibility(View.GONE);
+                reveal.setVisibility(View.VISIBLE);
 
-            final int endColor = explodeDecorator.getPrimaryColor(getContext());
-            final Animator anim;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                anim = ViewAnimationUtils.createCircularReveal(reveal, cx, cy, startRadius, finalRadius);
-            } else {
-                anim = ObjectAnimator.ofFloat(reveal, "alpha", 0, 1);
+                final int startColor = explodeDecorator.getDarkPrimaryColor(getContext());
+                final Drawable[] switchColors =
+                    { new ColorDrawable(startColor), new ColorDrawable(endColor) };
+                final TransitionDrawable colorSwitch = new TransitionDrawable(switchColors);
+                reveal.setBackground(colorSwitch);
+                colorSwitch.startTransition((int) animation.getDuration());
             }
-            anim.setDuration(getResources().getInteger(R.integer.px_long_animation_time));
-            anim.setStartDelay(getResources().getInteger(R.integer.px_long_animation_time));
-            anim.setInterpolator(new AccelerateInterpolator());
-            anim.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(final Animator animation) {
-                    if (isAdded()) {
-                        circle.setVisibility(View.GONE);
-                        icon.setVisibility(View.GONE);
-                        reveal.setVisibility(View.VISIBLE);
 
-                        final int startColor = explodeDecorator.getDarkPrimaryColor(getContext());
-                        final Drawable[] switchColors =
-                            { new ColorDrawable(startColor), new ColorDrawable(endColor) };
-                        final TransitionDrawable colorSwitch = new TransitionDrawable(switchColors);
-                        reveal.setBackgroundDrawable(colorSwitch);
-                        colorSwitch.startTransition((int) animation.getDuration());
-                    }
+            @Override
+            public void onAnimationEnd(final Animator animation) {
+                circularReveal = null;
+                explodeDecorator = null;
+                tintStatusBar(endColor);
+                if (handler != null) {
+                    handler.onAnimationFinished();
                 }
-
-                @Override
-                public void onAnimationEnd(final Animator animation) {
-                    tintStatusBar(endColor);
-                    animation.removeAllListeners();
-                    explodeDecorator = null;
-                    if (listener != null) {
-                        listener.onAnimationFinished();
-                    }
-                }
-            });
-
-            anim.start();
+            }
         });
+
+        circularReveal.start();
     }
 
     /* default */ void tintStatusBar(final int color) {
@@ -369,22 +339,69 @@ public class ExplodingFragment extends Fragment {
     }
 
     private void configureListener(final Context context) {
-        if (context instanceof ExplodingAnimationListener) {
-            listener = (ExplodingAnimationListener) context;
+        if (context instanceof Handler) {
+            handler = (Handler) context;
         } else if (getTargetFragment() != null) {
-            listener = (ExplodingAnimationListener) getTargetFragment();
+            handler = (Handler) getTargetFragment();
         } else if (getParentFragment() != null) {
-            listener = (ExplodingAnimationListener) getParentFragment();
+            handler = (Handler) getParentFragment();
         }
+    }
+
+    private void doFinishLoading() {
+        // now finish the remaining loading progress
+        final int progress = progressBar.getProgress();
+        animator.cancel();
+        animator = ObjectAnimator.ofInt(progressBar, "progress", progress, maxLoadingTime);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.setDuration(getResources().getInteger(R.integer.px_long_animation_time));
+
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(final Animator animation) {
+                animator.removeListener(this);
+                runIfVisibleAndReady(() -> createResultAnim());
+            }
+        });
+        animator.start();
+    }
+
+    private void updateValuesFromParentView(final View parentView) {
+        final int[] activityLocation = new int[2];
+        getActivityContentView().getLocationOnScreen(activityLocation);
+        final int[] parentLocation = new int[2];
+        parentView.getLocationOnScreen(parentLocation);
+        buttonYPosition = parentLocation[1] - activityLocation[1];
+        buttonHeight = parentView.getHeight();
+
+        final ViewGroup.MarginLayoutParams progressBarParams =
+            (ViewGroup.MarginLayoutParams) progressBar.getLayoutParams();
+        progressBarParams.height = buttonHeight;
+        progressBarParams.leftMargin = parentLocation[0];
+        progressBarParams.rightMargin = parentLocation[0];
+        progressBar.setPadding(parentView.getPaddingStart(), parentView.getPaddingTop(), parentView.getPaddingRight(),
+            parentView.getPaddingEnd());
+        progressBar.setLayoutParams(progressBarParams);
+        adjustHeight(circle);
+        adjustHeight(icon);
+        loadingContainer.setY(buttonYPosition);
     }
 
     private ViewGroup getActivityContentView() {
         return getActivity().findViewById(android.R.id.content);
     }
 
+    /* default */ void runIfVisibleAndReady(@NonNull final Runnable runnable) {
+        if (explodeDecorator == null) {
+            ExplodeFrictionTracker.INSTANCE.track();
+        } else {
+            ViewUtils.runWhenViewIsAttachedToWindow(rootView, runnable);
+        }
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
-        listener = null;
+        handler = null;
     }
 }

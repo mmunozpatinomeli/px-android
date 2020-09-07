@@ -55,6 +55,12 @@ public final class PaymentResultViewModelFactory {
         return PaymentResultDecorator.from(vm);
     }
 
+    public static PaymentResultDecorator createPaymentResultDecorator(@NonNull final PaymentResult paymentResult) {
+        final PaymentResultViewModel vm =
+            createPaymentResultViewModel(paymentResult.getPaymentStatus(), paymentResult.getPaymentStatusDetail());
+        return PaymentResultDecorator.from(vm);
+    }
+
     public static PaymentResultViewModel createPaymentResultViewModel(@NonNull final String statusCode,
         @NonNull final String statusDetail) {
         return createPaymentResultViewModel(generatePaymentResult(statusCode, statusDetail));

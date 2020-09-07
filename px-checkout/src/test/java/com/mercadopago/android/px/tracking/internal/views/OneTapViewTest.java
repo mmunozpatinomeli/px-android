@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import com.mercadopago.android.px.internal.di.CheckoutConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.tracking.TrackingRepository;
+import com.mercadopago.android.px.internal.tracking.TrackingRepositoryHelper;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -27,7 +28,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@PrepareForTest(Session.class)
+@PrepareForTest({Session.class, TrackingRepositoryHelper.class})
 @RunWith(PowerMockRunner.class)
 public class OneTapViewTest {
 
@@ -51,6 +52,7 @@ public class OneTapViewTest {
         final Session session = mock(Session.class);
         final CheckoutConfigurationModule configurationModule = mock(CheckoutConfigurationModule.class);
         PowerMockito.mockStatic(Session.class);
+        PowerMockito.mockStatic(TrackingRepositoryHelper.class);
         when(Session.getInstance()).thenReturn(session);
         when(session.getConfigurationModule()).thenReturn(configurationModule);
         when(configurationModule.getTrackingRepository()).thenReturn(mock(TrackingRepository.class));

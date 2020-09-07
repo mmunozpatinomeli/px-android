@@ -31,10 +31,6 @@ public interface PaymentRepository {
 
     int getPaymentTimeout();
 
-    void attach(@NonNull final PaymentServiceHandler handler);
-
-    void detach(@NonNull final PaymentServiceHandler handler);
-
     void storePayment(@NonNull final IPaymentDescriptor iPayment);
 
     @Nullable

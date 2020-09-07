@@ -87,7 +87,7 @@ public final class ResultViewTrackModel extends TrackingMapModel {
                 .join(new FromPaymentCongratsDiscountItemToItemId()
                     .map(paymentCongratsModel.getPaymentCongratsResponse().getDiscount().getItems())) : null,
             paymentCongratsModel.getPxPaymentCongratsTracking().getCampaignId(),
-            paymentCongratsModel.getPaymentsInfo().get(0).paymentMethodId,
+            paymentCongratsModel.getPxPaymentCongratsTracking().getPaymentMethodId(),
             paymentCongratsModel.getPaymentsInfo().get(0).paymentMethodType.name(),
             paymentCongratsModel.getPxPaymentCongratsTracking().getCurrencyId(),
             paymentCongratsModel.getPaymentData());

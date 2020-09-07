@@ -14,11 +14,9 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.mercadolibre.android.picassodiskcache.PicassoDiskLoader;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.extensions.ImageViewExtensionsKt;
 import com.mercadopago.android.px.internal.util.TextUtil;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
 
 public class ElementDescriptorView extends LinearLayout {
 
@@ -129,20 +127,7 @@ public class ElementDescriptorView extends LinearLayout {
             subtitle.setVisibility(GONE);
         }
 
-        final Picasso picasso = PicassoDiskLoader.get(getContext());
-        final RequestCreator requestCreator;
-
-        if (TextUtil.isNotEmpty(model.getUrlIcon())) {
-            requestCreator = picasso.load(model.getUrlIcon());
-        } else {
-            requestCreator = picasso.load(model.getIconResourceId());
-        }
-
-        requestCreator
-            .transform(new CircleTransform())
-            .placeholder(model.getIconResourceId())
-            .error(model.getIconResourceId())
-            .into(icon);
+        ImageViewExtensionsKt.loadOrElse(icon, model.getUrlIcon(), model.getIconResourceId(), new CircleTransform());
     }
 
     public static class Model {

@@ -3,15 +3,15 @@ apply plugin:'kotlin-android'
 apply plugin:'kotlin-android-extensions'
 
 android {
-    compileSdkVersion api_level as int
-    buildToolsVersion build_tools_version
+    compileSdkVersion apiLevel as int
+    buildToolsVersion buildTools
 
     testBuildType "release"
 
     defaultConfig {
         applicationId "com.mercadopago.example"
-        minSdkVersion min_api_level as int
-        targetSdkVersion api_level as int
+        minSdkVersion minApiLevel as int
+        targetSdkVersion apiLevel as int
         versionCode 1
         versionName version_to_deploy as String
 
@@ -69,13 +69,13 @@ dependencies {
     implementation "com.facebook.stetho:stetho:$stetho"
     implementation "com.facebook.stetho:stetho-okhttp3:$stetho"
     implementation "androidx.appcompat:appcompat:$appcompat"
-    implementation "androidx.recyclerview:recyclerview:$recycler_view"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "com.mercadolibre.android:ui:$meli_ui_lib"
+    implementation "androidx.recyclerview:recyclerview:$recyclerView"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin"
+    implementation "com.mercadolibre.android:ui:$ui"
 
-    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout"
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_canary"
-    debugBetaImplementation "com.squareup.leakcanary:leakcanary-android:$leak_canary"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintLayout"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanary"
+    debugBetaImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanary"
     androidTestImplementation project(':px-testlib')
     androidTestImplementation project(':testlib')
 

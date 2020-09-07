@@ -8,7 +8,6 @@ import com.mercadopago.android.px.R
 import com.mercadopago.android.px.internal.extensions.gone
 import com.mercadopago.android.px.internal.extensions.visible
 import com.mercadopago.android.px.internal.features.express.offline_methods.OfflineMethodsAdapter.OnItemClicked
-import com.mercadopago.android.px.internal.util.ResourceUtil
 import com.mercadopago.android.px.internal.util.ViewUtils
 import com.mercadopago.android.px.internal.view.MPTextView
 
@@ -31,8 +30,7 @@ internal class OfflineMethodsRowHolder(itemView: View) : RecyclerView.ViewHolder
             paymentTypeName.gone()
             ViewUtils.loadOrHide(View.GONE, offlineItem.name, paymentMethodName)
             ViewUtils.loadOrHide(View.GONE, offlineItem.description, description)
-            ViewUtils.loadOrGone(
-                ResourceUtil.getIconResource(methodImageView.context, offlineItem.iconResourceName), methodImageView)
+            ViewUtils.loadOrGone(offlineItem.imageUrl, methodImageView)
             radioButton.visible()
             itemView.setOnClickListener { onItemClicked.onClick() }
         }

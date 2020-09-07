@@ -1,5 +1,4 @@
 apply from:"$rootDir/gradle/base_android_lib.gradle"
-apply plugin:'spoon'
 apply from:"$rootDir/gradle/deploy_testlib.gradle"
 
 android {
@@ -13,18 +12,13 @@ android {
     }
 }
 
-spoon {
-    grantAllPermissions = true
-}
-
 dependencies {
     api "junit:junit:$junit"
-    api "androidx.test.ext:junit:$android_runner"
-    api "androidx.test:rules:$android_runner"
-    api "com.squareup.spoon:spoon-client:$spoon_client"
-    api "androidx.test.espresso:espresso-core:$espresso"
-    api "androidx.test.espresso:espresso-contrib:$espresso"
-    api "androidx.test.espresso:espresso-intents:$espresso"
+    api "androidx.test.ext:junit:$androidTestJunit"
+    api "androidx.test:rules:$androidTestCore"
+    api "androidx.test.espresso:espresso-core:$androidTestEspresso"
+    api "androidx.test.espresso:espresso-contrib:$androidTestEspresso"
+    api "androidx.test.espresso:espresso-intents:$androidTestEspresso"
     api "com.squareup.okhttp3:okhttp:$okhttp"
-    api "androidx.test.espresso:espresso-idling-resource:$espresso"
+    api "androidx.test.espresso:espresso-idling-resource:$androidTestEspresso"
 }

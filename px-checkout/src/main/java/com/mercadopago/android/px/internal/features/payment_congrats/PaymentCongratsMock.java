@@ -44,8 +44,8 @@ public final class PaymentCongratsMock {
         ArrayList<PaymentInfo> paymentList = new ArrayList();
         paymentList.add(
             new PaymentInfo.Builder()
-                .withPaymentMethodId("nativa")
                 .withPaymentMethodName("Money in Mercado Pago")
+                .withIconUrl("https://mobile.mercadolibre.com/remote_resources/image/px_pm_account_money?density=xhdpi&locale=en_US")
                 .withPaymentMethodType(PaymentInfo.PaymentMethodType.CONSUMER_CREDITS)
                 .withPaidAmount("$100")
                 .withDiscountData("50% OFF", "$200")
@@ -53,8 +53,8 @@ public final class PaymentCongratsMock {
         );
         paymentList.add(
             new PaymentInfo.Builder()
-                .withPaymentMethodId("tarshop")
                 .withPaymentMethodName("Visa")
+                .withIconUrl("https://mobile.mercadolibre.com/remote_resources/image/px_pm_visa?density=xhdpi&locale=en_US")
                 .withPaymentMethodType(PaymentInfo.PaymentMethodType.CREDIT_CARD)
                 .withLastFourDigits("8020")
                 .withPaidAmount("$100")
@@ -74,7 +74,8 @@ public final class PaymentCongratsMock {
             BigDecimal.valueOf(15.2),
             flowExtraInfo,
             "instore/buyer_qr",
-            "43242fasdf4"
+            "43242fasdf4",
+            "visa"
         );
 
         //Congrats

@@ -10,17 +10,8 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.view.Gravity;
@@ -35,6 +26,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import com.mercadolibre.android.picassodiskcache.PicassoDiskLoader;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsText;
@@ -126,7 +125,7 @@ public final class ViewUtils {
     }
 
     public static void loadOrGone(@Nullable final Text text, @NonNull final MPTextView textView) {
-        if (text ==  null || TextUtil.isEmpty(text.getMessage())) {
+        if (text == null || TextUtil.isEmpty(text.getMessage())) {
             textView.setVisibility(GONE);
         } else {
             textView.setText(text);
@@ -148,8 +147,13 @@ public final class ViewUtils {
         }
     }
 
-    public static void setMarginBottomInView(@NonNull final View view, final int marginBottom) {
-        setMarginInView(view, 0, 0, 0, marginBottom);
+    public static void loadOrGone(@Nullable final String imageUrl, final ImageView imageView) {
+        if (TextUtil.isNotEmpty(imageUrl)) {
+            PicassoDiskLoader.get(imageView.getContext()).load(imageUrl).into(imageView);
+            imageView.setVisibility(VISIBLE);
+        } else {
+            imageView.setVisibility(GONE);
+        }
     }
 
     public static void setMarginInView(@NonNull final View button, final int leftMargin, final int topMargin,
@@ -216,30 +220,11 @@ public final class ViewUtils {
         }
     }
 
-    public static void setBackgroundColorInSpannable(final int color, final int indexStart, final int indexEnd,
-        @NonNull final Spannable spannable) {
-        if (color != 0) {
-            spannable.setSpan(new BackgroundColorSpan(color), indexStart, indexEnd,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-    }
-
     public static void setColorInSpannable(@Nullable final String color, final int indexStart, final int indexEnd,
         @NonNull final Spannable spannable) {
         if (TextUtil.isNotEmpty(color)) {
             try {
                 setColorInSpannable(Color.parseColor(color), indexStart, indexEnd, spannable);
-            } catch (final Exception e) {
-                logParseColorError(color);
-            }
-        }
-    }
-
-    public static void setBackgroundColorInSpannable(@Nullable final String color, final int indexStart, final int indexEnd,
-        @NonNull final Spannable spannable) {
-        if (TextUtil.isNotEmpty(color)) {
-            try {
-                setBackgroundColorInSpannable(Color.parseColor(color), indexStart, indexEnd, spannable);
             } catch (final Exception e) {
                 logParseColorError(color);
             }
@@ -383,16 +368,20 @@ public final class ViewUtils {
         }
     }
 
-    public static void runWhenViewIsFullyMeasured(@NonNull final View view, @NonNull final Runnable runnable) {
-        if (ViewCompat.isLaidOut(view)) {
+    public static void runWhenViewIsAttachedToWindow(final View view, final Runnable runnable) {
+        if (view.isAttachedToWindow()) {
             runnable.run();
         } else {
-            view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
                 @Override
-                public void onLayoutChange(final View v, final int left, final int top, final int right,
-                    final int bottom, final int oldLeft, final int oldTop, final int oldRight, final int oldBottom) {
-                    view.removeOnLayoutChangeListener(this);
+                public void onViewAttachedToWindow(final View v) {
                     runnable.run();
+                    v.removeOnAttachStateChangeListener(this);
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(final View v) {
+
                 }
             });
         }

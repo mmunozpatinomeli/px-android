@@ -15,6 +15,7 @@ public final class OfflinePaymentMethod implements Parcelable, Serializable {
     @SerializedName("has_additional_info_needed")
     private final boolean additionalInfoNeeded;
     private final StatusMetadata status;
+    private final String imageUrl;
 
     public static final Creator<OfflinePaymentMethod> CREATOR = new Creator<OfflinePaymentMethod>() {
         @Override
@@ -35,6 +36,7 @@ public final class OfflinePaymentMethod implements Parcelable, Serializable {
         description = in.readParcelable(Text.class.getClassLoader());
         additionalInfoNeeded = in.readByte() != 0;
         status = in.readParcelable(StatusMetadata.class.getClassLoader());
+        imageUrl = in.readString();
     }
 
     public String getId() {
@@ -61,6 +63,10 @@ public final class OfflinePaymentMethod implements Parcelable, Serializable {
         return status;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -74,5 +80,6 @@ public final class OfflinePaymentMethod implements Parcelable, Serializable {
         dest.writeParcelable(description, flags);
         dest.writeByte((byte) (additionalInfoNeeded ? 1 : 0));
         dest.writeParcelable(status, flags);
+        dest.writeString(imageUrl);
     }
 }

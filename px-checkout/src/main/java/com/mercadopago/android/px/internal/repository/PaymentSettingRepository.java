@@ -81,4 +81,6 @@ public interface PaymentSettingRepository {
     SecurityType getSecurityType();
 
     boolean hasToken();
+
+    boolean isPaymentConfigurationValid();
 }

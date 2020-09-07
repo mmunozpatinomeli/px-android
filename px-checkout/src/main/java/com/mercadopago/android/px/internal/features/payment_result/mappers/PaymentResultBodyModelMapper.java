@@ -30,7 +30,9 @@ public class PaymentResultBodyModelMapper extends Mapper<PaymentModel, PaymentRe
         final PaymentCongratsResponse paymentCongratsResponse = new CongratsResponseMapper()
             .map(model.getCongratsResponse());
         for (final PaymentData paymentData : paymentResult.getPaymentDataList()) {
-            methodModels.add(PaymentResultMethod.Model.with(paymentData, model.getCurrency()));
+            final String imageUrl =
+                model.getCongratsResponse().getPaymentMethodsImages().get(paymentData.getPaymentMethod().getId());
+            methodModels.add(PaymentResultMethod.Model.with(imageUrl, paymentData, model.getCurrency()));
         }
 
         return new PaymentResultBody.Model.Builder()

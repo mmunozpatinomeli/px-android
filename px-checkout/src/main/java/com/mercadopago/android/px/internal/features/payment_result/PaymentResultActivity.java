@@ -12,15 +12,16 @@ import android.os.Bundle;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.widget.ScrollView;
+import com.mercadolibre.android.andesui.snackbar.AndesSnackbar;
+import com.mercadolibre.android.andesui.snackbar.duration.AndesSnackbarDuration;
+import com.mercadolibre.android.andesui.snackbar.type.AndesSnackbarType;
 import com.mercadolibre.android.mlbusinesscomponents.components.touchpoint.tracking.print.MLBusinessTouchpointListener;
-import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.internal.base.PXActivity;
@@ -45,6 +46,7 @@ import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAc
 import com.mercadopago.android.px.internal.viewmodel.handlers.PaymentModelHandler;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import kotlin.Unit;
 
 import static android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_ACTION;
@@ -88,10 +90,10 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         BaseExtensionsKt.addKeyBoardListener(this, () -> {
             footer.hideQuietButton();
             scrollView.fullScroll(View.FOCUS_DOWN);
-            return null;
+            return Unit.INSTANCE;
         }, () -> {
             footer.showQuietButton();
-            return null;
+            return Unit.INSTANCE;
         });
 
         presenter = createPresenter();
@@ -234,9 +236,10 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         final ClipData clip = ClipData.newPlainText("", content);
         if (clipboard != null) {
             clipboard.setPrimaryClip(clip);
-            MeliSnackbar.make(findViewById(R.id.container),
+            final View container = findViewById(R.id.container);
+            new AndesSnackbar(container.getContext(), container, AndesSnackbarType.SUCCESS,
                 getString(R.string.px_copied_to_clipboard_ack),
-                Snackbar.LENGTH_SHORT, MeliSnackbar.SnackbarType.SUCCESS).show();
+                AndesSnackbarDuration.SHORT).show();
         }
     }
 

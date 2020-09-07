@@ -30,7 +30,7 @@ public final class MPAnimationUtils {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void fadeInLollipop(final int color, final ImageView imageView) {
-        ViewUtils.runWhenViewIsFullyMeasured(imageView, () -> {
+        ViewUtils.runWhenViewIsAttachedToWindow(imageView, () -> {
             imageView.setColorFilter(ContextCompat.getColor(imageView.getContext(), color),
                 PorterDuff.Mode.SRC_ATOP);
 
@@ -46,7 +46,7 @@ public final class MPAnimationUtils {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void fadeOutLollipop(final int color, final ImageView imageView) {
-        ViewUtils.runWhenViewIsFullyMeasured(imageView, () -> {
+        ViewUtils.runWhenViewIsAttachedToWindow(imageView, () -> {
             final int width = imageView.getWidth();
             final Animator anim = ViewAnimationUtils.createCircularReveal(imageView, -width, 0,
                 ANIMATION_EXTRA_FACTOR * width, width);
@@ -79,7 +79,7 @@ public final class MPAnimationUtils {
     }
 
     public static void fadeIn(final int color, final ImageView imageView) {
-        ViewUtils.runWhenViewIsFullyMeasured(imageView, () -> {
+        ViewUtils.runWhenViewIsAttachedToWindow(imageView, () -> {
             final Animation mAnimFadeIn = AnimationUtils.loadAnimation(imageView.getContext(), R.anim.px_fade_in);
             mAnimFadeIn.setAnimationListener(new Animation.AnimationListener() {
                 @Override
@@ -103,7 +103,7 @@ public final class MPAnimationUtils {
     }
 
     public static void fadeOut(final int color, final ImageView imageView) {
-        ViewUtils.runWhenViewIsFullyMeasured(imageView, () -> {
+        ViewUtils.runWhenViewIsAttachedToWindow(imageView, () -> {
             final Animation mAnimFadeOut = AnimationUtils.loadAnimation(imageView.getContext(), R.anim.px_fade_out);
             mAnimFadeOut.setAnimationListener(new Animation.AnimationListener() {
                 @Override

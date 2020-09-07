@@ -22,8 +22,8 @@ open class SamplePaymentProcessor @JvmOverloads constructor(private val visualPr
 
     private constructor(parcel: Parcel) : this(
         parcel.readInt() == 1,
-        *listOf<IParcelablePaymentDescriptor>().apply {
-            parcel.readList(this, IParcelablePaymentDescriptor::class.java.classLoader)
+        *mutableListOf<IParcelablePaymentDescriptor>().apply {
+            parcel.readList(this as List<*>, IParcelablePaymentDescriptor::class.java.classLoader)
         }.toTypedArray()) {
         index = parcel.readInt()
     }
@@ -52,8 +52,8 @@ open class SamplePaymentProcessor @JvmOverloads constructor(private val visualPr
     override fun describeContents() = 0
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeList(payments.toList())
         parcel.writeInt(if (visualProcessor) 1 else 0)
+        parcel.writeList(payments.toList())
         parcel.writeInt(index)
     }
 

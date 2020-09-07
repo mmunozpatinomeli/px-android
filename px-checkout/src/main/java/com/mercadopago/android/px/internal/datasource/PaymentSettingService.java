@@ -3,11 +3,11 @@ package com.mercadopago.android.px.internal.datasource;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.mercadopago.android.px.internal.core.FileManager;
-import com.mercadopago.android.px.internal.model.SecurityType;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.DiscountParamsConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
+import com.mercadopago.android.px.internal.core.FileManager;
+import com.mercadopago.android.px.internal.model.SecurityType;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.Currency;
@@ -259,5 +259,15 @@ public class PaymentSettingService implements PaymentSettingRepository {
     @Override
     public String getPrivateKey() {
         return sharedPreferences.getString(PREF_PRIVATE_KEY, null);
+    }
+
+    @Override
+    public boolean isPaymentConfigurationValid() {
+        try {
+            getPaymentConfiguration();
+            return true;
+        } catch (final Exception e) {
+            return false;
+        }
     }
 }

@@ -1,7 +1,5 @@
 package com.mercadopago.android.px.internal.features.express.offline_methods
 
-import com.mercadopago.android.px.internal.util.TextUtil
-import com.mercadopago.android.px.model.OfflinePaymentMethod
 import com.mercadopago.android.px.model.OfflinePaymentType
 import java.util.*
 
@@ -16,20 +14,10 @@ internal object FromOfflinePaymentTypesMetadataToOfflineItems {
                     offlineMethodItems.add(
                         OfflineMethodItem(offlinePaymentMethod.name, offlinePaymentMethod.id,
                             offlinePaymentMethod.instructionId, offlinePaymentMethod.description,
-                            getResourceName(offlinePaymentType, offlinePaymentMethod),
-                            offlinePaymentMethod.isAdditionalInfoNeeded))
+                            offlinePaymentMethod.imageUrl, offlinePaymentMethod.isAdditionalInfoNeeded))
                 }
             }
         }
         return offlineMethodItems
-    }
-
-    private fun getResourceName(paymentType: OfflinePaymentType, paymentMethod: OfflinePaymentMethod): String {
-        return paymentMethod.id +
-            if (paymentMethod.instructionId != paymentType.id) {
-                TextUtil.UNDERSCORE.toString() + paymentMethod.instructionId
-            } else {
-                TextUtil.EMPTY
-            }
     }
 }

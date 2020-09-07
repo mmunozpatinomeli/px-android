@@ -11,9 +11,4 @@ interface TrackingRepository {
     data class Model(val sessionId: String, val flowId: String?, val flowDetail: Map<String, Any>?) {
         constructor(sessionId: String) : this(sessionId, null, null)
     }
-
-    companion object {
-        @JvmStatic var OLD_STATIC_FLOW_ID: String? = null
-        @JvmStatic var OLD_STATIC_FLOW_DETAIL: Map<String, Any>? = null
-    }
 }

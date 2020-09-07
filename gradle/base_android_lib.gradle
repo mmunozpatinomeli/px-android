@@ -1,10 +1,5 @@
 apply plugin:'com.android.library'
 
-if (project.hasProperty('production')) {
-    apply plugin:'com.getkeepsafe.dexcount'
-}
-
-
 android {
 
     compileOptions {
@@ -12,12 +7,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    compileSdkVersion api_level as int
-    buildToolsVersion build_tools_version as String
+    compileSdkVersion apiLevel as int
+    buildToolsVersion buildTools as String
 
     defaultConfig {
-        minSdkVersion min_api_level as int
-        targetSdkVersion api_level as int
+        minSdkVersion minApiLevel as int
+        targetSdkVersion apiLevel as int
         versionCode 1
         versionName version_to_deploy as String
         consumerProguardFiles 'proguard-rules.pro'

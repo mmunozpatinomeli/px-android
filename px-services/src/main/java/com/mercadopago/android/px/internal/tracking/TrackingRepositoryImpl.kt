@@ -1,11 +1,9 @@
 package com.mercadopago.android.px.internal.tracking
 
+import android.content.Context
 import android.content.SharedPreferences
-import com.mercadopago.android.px.internal.tracking.TrackingRepository.Companion.OLD_STATIC_FLOW_DETAIL
-import com.mercadopago.android.px.internal.tracking.TrackingRepository.Companion.OLD_STATIC_FLOW_ID
-import com.mercadopago.android.px.internal.util.JsonUtil
 
-class TrackingRepositoryImpl(private val sharedPreferences: SharedPreferences) : TrackingRepository {
+class TrackingRepositoryImpl(context: Context, private val sharedPreferences: SharedPreferences) : TrackingRepository {
 
     private var internalSessionId: String? = null
     override val sessionId: String
@@ -16,52 +14,35 @@ class TrackingRepositoryImpl(private val sharedPreferences: SharedPreferences) :
             return internalSessionId ?: DEFAULT_SESSION_ID
         }
 
-    private var internalFlowId: String? = null
-    override val flowId: String
-        get() {
-            if (internalFlowId == null) {
-                internalFlowId = sharedPreferences.getString(PREF_FLOW_ID, null)
-            }
-            return internalFlowId ?: OLD_STATIC_FLOW_ID ?: DEFAULT_FLOW_ID
-        }
+    private val flowProvider = FlowProvider(sharedPreferences)
+    private val legacyFlowProvider = LegacyFlowProvider(context)
 
-    private var internalFlowDetail: Map<String, Any>? = null
+    override val flowId: String
+        get() = flowProvider.flowId ?: legacyFlowProvider.flowId ?: DEFAULT_FLOW_ID
     override val flowDetail: Map<String, Any>
-        get() {
-            if (internalFlowDetail == null) {
-                internalFlowDetail = JsonUtil.getMapFromJson(sharedPreferences.getString(PREF_FLOW_DETAIL, null))
-            }
-            return internalFlowDetail ?: OLD_STATIC_FLOW_DETAIL ?: emptyMap()
-        }
+        get() = flowProvider.flowDetail ?: legacyFlowProvider.flowDetail ?: emptyMap()
 
     override fun configure(model: TrackingRepository.Model) {
         internalSessionId = model.sessionId
-        internalFlowId = model.flowId
-        internalFlowDetail = model.flowDetail
         with(sharedPreferences.edit()) {
             putString(PREF_SESSION_ID, internalSessionId)
-            internalFlowId?.let { putString(PREF_FLOW_ID, it) }
-            internalFlowDetail?.let { putString(PREF_FLOW_DETAIL, JsonUtil.toJson(it)) }
             apply()
         }
+        flowProvider.configure(model.flowId, model.flowDetail)
     }
 
     override fun reset() {
         internalSessionId = null
-        internalFlowId = null
-        internalFlowDetail = null
-        sharedPreferences.edit()
-            .remove(PREF_SESSION_ID)
-            .remove(PREF_FLOW_ID)
-            .remove(PREF_FLOW_DETAIL)
-            .apply()
+        with(sharedPreferences.edit()) {
+            remove(PREF_SESSION_ID)
+            apply()
+        }
+        flowProvider.reset()
     }
 
     companion object {
         private const val DEFAULT_SESSION_ID = "no-value"
         private const val DEFAULT_FLOW_ID = "unknown"
         private const val PREF_SESSION_ID = "PREF_SESSION_ID"
-        private const val PREF_FLOW_ID = "PREF_FLOW_ID"
-        private const val PREF_FLOW_DETAIL = "PREF_FLOW_DETAIL"
     }
 }

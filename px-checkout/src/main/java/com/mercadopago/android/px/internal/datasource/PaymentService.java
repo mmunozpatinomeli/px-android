@@ -7,7 +7,6 @@ import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.core.internal.PaymentWrapper;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceEventHandler;
-import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandlerWrapper;
 import com.mercadopago.android.px.internal.core.FileManager;
 import com.mercadopago.android.px.internal.model.EscStatus;
@@ -117,17 +116,6 @@ public class PaymentService implements PaymentRepository {
     }
 
     @Override
-    public void attach(@NonNull final PaymentServiceHandler handler) {
-        handlerWrapper.setHandler(handler);
-        handlerWrapper.processMessages();
-    }
-
-    @Override
-    public void detach(@NonNull final PaymentServiceHandler handler) {
-        handlerWrapper.detach(handler);
-    }
-
-    @Override
     public void reset() {
         fileManager.removeFile(paymentFile);
     }
@@ -222,20 +210,11 @@ public class PaymentService implements PaymentRepository {
     @Override
     public void startPayment() {
         //Wrapping the callback is important to assure ESC handling.
-        checkPaymentMethod();
+        processPaymentMethod();
     }
 
-    /* default */ void checkPaymentMethod() {
-        final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
-        if (paymentMethod != null) {
-            processPaymentMethod(paymentMethod);
-        } else {
-            handlerWrapper.onPaymentError(getError());
-        }
-    }
-
-    private void processPaymentMethod(final PaymentMethod paymentMethod) {
-        if (PaymentTypes.isCardPaymentType(paymentMethod.getPaymentTypeId())) {
+    /* default */ void processPaymentMethod() {
+        if (PaymentTypes.isCardPaymentType(userSelectionRepository.getPaymentMethod().getPaymentTypeId())) {
             payWithCard();
         } else {
             pay();
@@ -270,7 +249,7 @@ public class PaymentService implements PaymentRepository {
             tokenRepository.createToken(card).enqueue(new Callback<Token>() {
                 @Override
                 public void success(final Token token) {
-                    checkPaymentMethod();
+                    processPaymentMethod();
                 }
 
                 @Override

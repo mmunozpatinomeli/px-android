@@ -9,7 +9,7 @@ import com.mercadopago.android.px.internal.tracking.TrackingRepositoryImpl
 abstract class ConfigurationModule(context: Context) : ApplicationModule(context) {
 
     val productIdProvider by lazy { ProductIdProvider(sharedPreferences) }
-    val trackingRepository: TrackingRepository by lazy { TrackingRepositoryImpl(sharedPreferences) }
+    val trackingRepository: TrackingRepository by lazy { TrackingRepositoryImpl(applicationContext, sharedPreferences) }
 
     open fun reset() {
         productIdProvider.reset()

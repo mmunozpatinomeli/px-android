@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class CongratsResponse implements Parcelable {
 
@@ -35,6 +36,7 @@ public final class CongratsResponse implements Parcelable {
     private final List<CrossSelling> crossSellings;
     private final Action viewReceipt;
     private final boolean customOrder;
+    private final Map<String, String> paymentMethodsImages;
 
     private CongratsResponse() {
         score = null;
@@ -43,6 +45,7 @@ public final class CongratsResponse implements Parcelable {
         crossSellings = Collections.emptyList();
         viewReceipt = null;
         customOrder = false;
+        paymentMethodsImages = Collections.emptyMap();
     }
 
     /* default */ CongratsResponse(final Parcel in) {
@@ -52,6 +55,8 @@ public final class CongratsResponse implements Parcelable {
         crossSellings = in.createTypedArrayList(CrossSelling.CREATOR);
         viewReceipt = in.readParcelable(Action.class.getClassLoader());
         customOrder = in.readInt() == 1;
+        paymentMethodsImages = new HashMap<>();
+        in.readMap(paymentMethodsImages, HashMap.class.getClassLoader());
     }
 
     @Override
@@ -62,6 +67,7 @@ public final class CongratsResponse implements Parcelable {
         dest.writeTypedList(crossSellings);
         dest.writeParcelable(viewReceipt, flags);
         dest.writeInt(customOrder ? 1 : 0);
+        dest.writeMap(paymentMethodsImages);
     }
 
     @Override
@@ -96,6 +102,11 @@ public final class CongratsResponse implements Parcelable {
 
     public boolean hasCustomOrder() {
         return customOrder;
+    }
+
+    @NonNull
+    public Map<String, String> getPaymentMethodsImages() {
+        return paymentMethodsImages != null ? paymentMethodsImages : Collections.emptyMap();
     }
 
     /* default */public static final class Score implements Parcelable {

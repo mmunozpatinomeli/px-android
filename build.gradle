@@ -5,17 +5,18 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:$gradle_plugin_version"
-        classpath 'org.jacoco:org.jacoco.core:0.8.1'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
-        classpath 'com.monits:static-code-analysis-plugin:2.6.11'
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.3'
-        classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.android.tools.build:gradle:$gradlePlugin"
+        classpath "org.jacoco:org.jacoco.core:$jacoco"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintray"
+        classpath "com.github.dcendents:android-maven-gradle-plugin:$maven"
+        classpath "com.monits:static-code-analysis-plugin:$staticCodeAnalysis"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin"
     }
 }
 

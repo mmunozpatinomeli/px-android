@@ -15,23 +15,3 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
-
-
-
--dontwarn android.graphics.drawable.**
--dontwarn sun.misc.**
--dontwarn android.support.test.**
--dontwarn android.content.**
-
-######################## okhttp ##########################
--keepclassmembers class okhttp3.Dispatcher {
-	*** setIdleCallback(***);
-	*** runningCallsCount();
-}
-
-######################## Okhttp ##########################
-
--keepclassmembers public class android.support.v7.widget.RecyclerView {
-	*** scrollToPosition(***);
-	*** findViewHolderForPosition(***);
-}
