@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.features.payment_congrats;
+package com.mercadopago.android.px.feature.payment_congrats;
 
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PXPaymentCongratsTracking;
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModel;

@@ -10,7 +10,7 @@ import com.mercadopago.android.px.core.CheckoutLazyInit;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.feature.custom_initialize.CustomInitializationActivity;
 import com.mercadopago.android.px.internal.features.payment_congrats.PaymentCongrats;
-import com.mercadopago.android.px.internal.features.payment_congrats.PaymentCongratsMock;
+import com.mercadopago.android.px.feature.payment_congrats.PaymentCongratsMock;
 import com.mercadopago.android.px.utils.ExamplesUtils;
 import com.mercadopago.example.R;
 

@@ -3,7 +3,7 @@ package com.mercadopago.android.px.internal.features.payment_congrats.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class PaymentResultInfo implements Parcelable{
+public final class PaymentResultInfo implements Parcelable{
 
     private final String title;
     private final String subtitle;

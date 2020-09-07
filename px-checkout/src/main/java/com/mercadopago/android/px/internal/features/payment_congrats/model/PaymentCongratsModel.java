@@ -10,6 +10,7 @@ import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.ExternalFragment;
 import com.mercadopago.android.px.model.PaymentData;
+import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +28,6 @@ public class PaymentCongratsModel implements Parcelable {
                 return new PaymentCongratsModel[size];
             }
         };
-
-    public static final String SUCCESS = "success";
-    public static final String PENDING = "further_action_needed";
-    public static final String ERROR = "error";
-    public static final String UNKNOWN = "unknown";
 
     //Basic data
     @NonNull private final CongratsType congratsType;
@@ -367,13 +363,13 @@ public class PaymentCongratsModel implements Parcelable {
             }
             switch (congratsType) {
             case APPROVED:
-                paymentStatus = SUCCESS;
+                paymentStatus = ResultViewTrack.SUCCESS;
                 break;
             case PENDING:
-                paymentStatus = PENDING;
+                paymentStatus = ResultViewTrack.PENDING;
                 break;
             case REJECTED:
-                paymentStatus = ERROR;
+                paymentStatus = ResultViewTrack.ERROR;
                 break;
             }
             paymentCongratsResponse =

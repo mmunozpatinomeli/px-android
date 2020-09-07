@@ -1,10 +1,10 @@
 package com.mercadopago.android.px.internal.util;
 
 import androidx.annotation.NonNull;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentInfo;
 import com.mercadopago.android.px.model.PaymentData;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.List;
 
 public final class PaymentDataHelper {
 
@@ -20,7 +20,11 @@ public final class PaymentDataHelper {
         return paymentData.getRawAmount();
     }
 
-    public static <T> boolean isSplitPayment(@NonNull final Collection<T> paymentDataList) {
+    public static boolean isSplitPaymentData(@NonNull final Collection<PaymentData> paymentDataList) {
+        return paymentDataList.size() > 1;
+    }
+
+    public static boolean isSplitPaymentInfo(@NonNull final Collection<PaymentInfo> paymentDataList) {
         return paymentDataList.size() > 1;
     }
 
