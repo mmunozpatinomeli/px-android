@@ -152,15 +152,6 @@ public final class Session extends ApplicationModule {
                 trackingData.getFlowExtraInfo()));
     }
 
-    public void init(@NonNull final PaymentCongratsModel paymentCongratsModel) {
-        initialized = true;
-        final PXPaymentCongratsTracking trackingData = paymentCongratsModel.getPxPaymentCongratsTracking();
-        configurationModule.getTrackingRepository().reset();
-        configurationModule.getTrackingRepository().configure(
-            new TrackingRepository.Model(trackingData.getSessionId(), trackingData.getFlow(),
-                trackingData.getFlowExtraInfo()));
-    }
-
     public boolean isInitialized() {
         return configurationModule.getPaymentSettings().isPaymentConfigurationValid();
     }
