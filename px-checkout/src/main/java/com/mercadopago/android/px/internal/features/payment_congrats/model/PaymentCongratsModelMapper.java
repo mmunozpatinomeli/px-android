@@ -113,6 +113,7 @@ public class PaymentCongratsModelMapper {
         return builder.build();
     }
 
+
     private PaymentInfo getPaymentsInfo(final PaymentData paymentData, final Currency currency,
         final CongratsResponse congratsResponse) {
         final PaymentInfo.Builder paymentInfo = new PaymentInfo.Builder()
@@ -123,6 +124,7 @@ public class PaymentCongratsModelMapper {
                 PaymentDataHelper.getPrettyAmountToPay(paymentData)))
             .withIconUrl(
                 congratsResponse.getPaymentMethodsImages().get(paymentData.getPaymentMethod().getId()));
+
         if (paymentData.getToken() != null && paymentData.getToken().getLastFourDigits() != null) {
             paymentInfo.withLastFourDigits(paymentData.getToken().getLastFourDigits());
         }

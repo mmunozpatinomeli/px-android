@@ -144,6 +144,7 @@ public class PaymentResultMethod extends ConstraintLayout {
                     );
                     paymentInfoBuilder.withDescription(description);
                 }
+
             }
             if (paymentData.getDiscount() != null) {
                 paymentInfoBuilder
