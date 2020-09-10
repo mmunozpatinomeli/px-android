@@ -13,7 +13,7 @@ public class ConfirmButtonAdapter extends HubableAdapter<List<ConfirmButtonViewM
 
     public ConfirmButtonAdapter(@NonNull final PayButtonFragment fragment) {
         super(null);
-        this.payButton = fragment;
+        payButton = fragment;
     }
 
     @Override

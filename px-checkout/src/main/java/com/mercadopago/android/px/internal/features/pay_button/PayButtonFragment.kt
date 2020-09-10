@@ -159,6 +159,8 @@ class PayButtonFragment : Fragment(), PayButton.View, SecurityValidationHandler 
             cancelLoading()
             if (resultCode == Activity.RESULT_OK) {
                 viewModel.startPayment()
+            } else {
+                enable()
             }
         } else if (requestCode == REQ_CODE_CONGRATS && resultCode == Constants.RESULT_ACTION) {
             handleAction(data)

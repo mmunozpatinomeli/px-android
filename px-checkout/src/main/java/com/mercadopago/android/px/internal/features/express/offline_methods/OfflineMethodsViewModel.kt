@@ -3,9 +3,9 @@ package com.mercadopago.android.px.internal.features.express.offline_methods
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.mercadopago.android.px.internal.base.BaseViewModel
-import com.mercadopago.android.px.internal.callbacks.Event
 import com.mercadopago.android.px.internal.extensions.orIfEmpty
 import com.mercadopago.android.px.internal.features.pay_button.PayButton.OnReadyForPaymentCallback
+import com.mercadopago.android.px.internal.livedata.MutableSingleLiveData
 import com.mercadopago.android.px.internal.repository.AmountRepository
 import com.mercadopago.android.px.internal.repository.DiscountRepository
 import com.mercadopago.android.px.internal.repository.InitRepository
@@ -32,7 +32,7 @@ internal class OfflineMethodsViewModel(private val initRepository: InitRepositor
     private var payerCompliance: OfflineMethodsCompliance? = null
     private var selectedItem: OfflineMethodItem? = null
 
-    private val observableDeepLink = MutableLiveData<Event<String>>()
+    private val observableDeepLink = MutableSingleLiveData<String>()
 
     override fun onViewLoaded(): LiveData<OfflineMethods.Model> {
         val liveData = MutableLiveData<OfflineMethods.Model>()
@@ -68,7 +68,7 @@ internal class OfflineMethodsViewModel(private val initRepository: InitRepositor
                     completePayerInformation(it.sensitiveInformation)
                 } else if (item.isAdditionalInfoNeeded) {
                     KnowYourCustomerFlowEvent(viewTracker).track()
-                    observableDeepLink.value = Event(it.turnComplianceDeepLink)
+                    observableDeepLink.value = it.turnComplianceDeepLink
                     return
                 }
             }
@@ -99,5 +99,5 @@ internal class OfflineMethodsViewModel(private val initRepository: InitRepositor
         BackEvent(viewTracker).track()
     }
 
-    override fun getObservableDeepLink(): LiveData<Event<String>> = observableDeepLink
+    override fun getObservableDeepLink(): LiveData<String> = observableDeepLink
 }

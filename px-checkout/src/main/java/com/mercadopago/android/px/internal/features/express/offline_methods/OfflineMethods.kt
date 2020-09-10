@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.features.express.offline_methods
 
 import androidx.lifecycle.LiveData
-import com.mercadopago.android.px.internal.callbacks.Event
 import com.mercadopago.android.px.internal.features.pay_button.PayButton
 import com.mercadopago.android.px.internal.viewmodel.AmountLocalized
 import com.mercadopago.android.px.model.ExpressMetadata
@@ -21,7 +20,7 @@ internal interface OfflineMethods {
         fun onMethodSelected(selectedItem: OfflineMethodItem)
         fun onPrePayment(callback: PayButton.OnReadyForPaymentCallback)
         fun onBack()
-        fun getObservableDeepLink(): LiveData<Event<String>>
+        fun getObservableDeepLink(): LiveData<String>
     }
 
     interface OnMethodSelectedListener {
@@ -36,7 +35,7 @@ internal interface OfflineMethods {
     companion object {
         @JvmStatic
         fun shouldLaunch(expressMetadataList: List<ExpressMetadata>): Boolean {
-            return expressMetadataList.filter { express -> express.status.run { isActive &&  isEnabled } }
+            return expressMetadataList.filter { express -> express.status.run { isActive && isEnabled } }
                 .run { size == 1 && get(0).isOfflineMethods }
         }
 

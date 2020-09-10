@@ -1,12 +1,10 @@
 package com.mercadopago.android.px.internal.features.pay_button
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.mercadopago.android.px.BasicRobolectricTest
 import com.mercadopago.android.px.argumentCaptor
 import com.mercadopago.android.px.any
-import com.mercadopago.android.px.internal.callbacks.Event
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceEventHandler
 import com.mercadopago.android.px.internal.core.ConnectionHelper
 import com.mercadopago.android.px.internal.core.ProductIdProvider
@@ -17,6 +15,7 @@ import com.mercadopago.android.px.internal.di.Session
 import com.mercadopago.android.px.internal.features.PaymentResultViewModelFactory
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator
 import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesModel
+import com.mercadopago.android.px.internal.livedata.MutableSingleLiveData
 import com.mercadopago.android.px.internal.model.SecurityType
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel
@@ -26,7 +25,6 @@ import com.mercadopago.android.px.model.*
 import com.mercadopago.android.px.model.Payment.StatusCodes.STATUS_APPROVED
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError
 import com.mercadopago.android.px.model.internal.CustomTexts
-import com.mercadopago.android.px.model.internal.GenericPaymentDescriptor
 import com.mercadopago.android.px.model.internal.PaymentConfiguration
 import com.mercadopago.android.px.model.internal.remedies.RemediesResponse
 import com.mercadopago.android.px.preferences.CheckoutPreference
@@ -76,11 +74,11 @@ internal class PayButtonViewModelTest: BasicRobolectricTest() {
     private lateinit var cvvRequiredObserver: Observer<Pair<Card, Reason>?>
     @Mock
     private lateinit var recoverRequiredObserver: Observer<PaymentRecovery?>
-    private val paymentErrorLiveData = MutableLiveData<Event<MercadoPagoError>>()
-    private val paymentFinishedLiveData = MutableLiveData<Event<PaymentModel>>()
-    private val requireCvvLiveData = MutableLiveData<Event<Pair<Card, Reason>>>()
-    private val recoverInvalidEscLiveData = MutableLiveData<Event<PaymentRecovery>>()
-    private val visualPaymentLiveData = MutableLiveData<Event<Unit>>()
+    private val paymentErrorLiveData = MutableSingleLiveData<MercadoPagoError>()
+    private val paymentFinishedLiveData = MutableSingleLiveData<PaymentModel>()
+    private val requireCvvLiveData = MutableSingleLiveData<Pair<Card, Reason>>()
+    private val recoverInvalidEscLiveData = MutableSingleLiveData<PaymentRecovery>()
+    private val visualPaymentLiveData = MutableSingleLiveData<Unit>()
 
     /*
     * https://stackoverflow.com/questions/29945087/kotlin-and-new-activitytestrule-the-rule-must-be-public
@@ -172,7 +170,7 @@ internal class PayButtonViewModelTest: BasicRobolectricTest() {
         `when`(paymentService.paymentDataList).thenReturn(mock(MutableList::class.java) as MutableList<PaymentData>)
 
         payButtonViewModelSpy.startPayment()
-        paymentErrorLiveData.value = Event(error)
+        paymentErrorLiveData.value = error
 
         verify(handler).enqueueOnExploding(callback.capture())
         callback.value.success()
@@ -190,7 +188,7 @@ internal class PayButtonViewModelTest: BasicRobolectricTest() {
         `when`(error.isPaymentProcessing).thenReturn(false)
 
         payButtonViewModel.startPayment()
-        paymentErrorLiveData.value = Event(error)
+        paymentErrorLiveData.value = error
 
         verify(handler).enqueueOnExploding(callback.capture())
         callback.value.success()
@@ -204,7 +202,7 @@ internal class PayButtonViewModelTest: BasicRobolectricTest() {
         val callback = argumentCaptor<PayButton.OnEnqueueResolvedCallback>()
 
         payButtonViewModel.startPayment()
-        visualPaymentLiveData.value = Event(Unit)
+        visualPaymentLiveData.value = Unit
 
         verify(handler).enqueueOnExploding(callback.capture())
         callback.value.success()
@@ -219,7 +217,7 @@ internal class PayButtonViewModelTest: BasicRobolectricTest() {
         `when`(paymentModel.remedies.hasRemedies()).thenReturn(true)
 
         payButtonViewModel.startPayment()
-        paymentFinishedLiveData.value = Event(paymentModel)
+        paymentFinishedLiveData.value = paymentModel
 
         verify(handler).enqueueOnExploding(callback.capture())
         callback.value.success()
@@ -240,7 +238,7 @@ internal class PayButtonViewModelTest: BasicRobolectricTest() {
         `when`(paymentModel.payment.decorator).thenReturn(BusinessPayment.Decorator.APPROVED)
 
         payButtonViewModel.startPayment()
-        paymentFinishedLiveData.value = Event(paymentModel)
+        paymentFinishedLiveData.value = paymentModel
 
         verify(handler).enqueueOnExploding(callback.capture())
         callback.value.success()
@@ -262,7 +260,7 @@ internal class PayButtonViewModelTest: BasicRobolectricTest() {
         `when`(paymentModel.paymentResult.paymentStatusDetail).thenReturn(null)
 
         payButtonViewModel.startPayment()
-        paymentFinishedLiveData.value = Event(paymentModel)
+        paymentFinishedLiveData.value = paymentModel
 
         verify(handler).enqueueOnExploding(callback.capture())
         callback.value.success()
@@ -280,7 +278,7 @@ internal class PayButtonViewModelTest: BasicRobolectricTest() {
         val pair = Pair(mock(Card::class.java), mock(Reason::class.java))
 
         payButtonViewModel.startPayment()
-        requireCvvLiveData.value = Event(pair)
+        requireCvvLiveData.value = pair
 
         verify(handler).enqueueOnExploding(callback.capture())
         callback.value.success()
@@ -294,7 +292,7 @@ internal class PayButtonViewModelTest: BasicRobolectricTest() {
         `when`(paymentRecoveryMock.shouldAskForCvv()).thenReturn(true)
 
         payButtonViewModel.startPayment()
-        recoverInvalidEscLiveData.value = Event(paymentRecoveryMock)
+        recoverInvalidEscLiveData.value = paymentRecoveryMock
 
         verify(handler).enqueueOnExploding(callback.capture())
         callback.value.success()
@@ -308,7 +306,7 @@ internal class PayButtonViewModelTest: BasicRobolectricTest() {
         `when`(paymentRecoveryMock.shouldAskForCvv()).thenReturn(false)
 
         payButtonViewModel.startPayment()
-        recoverInvalidEscLiveData.value = Event(paymentRecoveryMock)
+        recoverInvalidEscLiveData.value = paymentRecoveryMock
 
         verify(handler).enqueueOnExploding(callback.capture())
         callback.value.success()

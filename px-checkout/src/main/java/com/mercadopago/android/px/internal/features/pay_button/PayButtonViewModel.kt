@@ -1,13 +1,11 @@
 package com.mercadopago.android.px.internal.features.pay_button
 
+import android.os.Bundle
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations.map
-import android.os.Bundle
 import com.mercadopago.android.px.addons.model.SecurityValidationData
 import com.mercadopago.android.px.internal.base.BaseViewModel
-import com.mercadopago.android.px.internal.callbacks.Event
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceEventHandler
 import com.mercadopago.android.px.internal.core.ConnectionHelper
 import com.mercadopago.android.px.internal.core.ProductIdProvider
@@ -17,6 +15,7 @@ import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapp
 import com.mercadopago.android.px.internal.features.pay_button.PayButton.OnReadyForPaymentCallback
 import com.mercadopago.android.px.internal.features.pay_button.UIProgress.*
 import com.mercadopago.android.px.internal.features.pay_button.UIResult.VisualProcessorResult
+import com.mercadopago.android.px.internal.livedata.MediatorSingleLiveData
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModelMapper
 import com.mercadopago.android.px.internal.model.SecurityType
 import com.mercadopago.android.px.internal.repository.CustomTextsRepository
@@ -60,17 +59,15 @@ internal class PayButtonViewModel(
     private var paymentConfiguration: PaymentConfiguration? = null
     private var paymentModel: PaymentModel? = null
 
-    val cvvRequiredLiveData = MediatorLiveData<Pair<Card, Reason>?>()
-    val recoverRequiredLiveData = MediatorLiveData<PaymentRecovery?>()
-    val stateUILiveData = MediatorLiveData<PayButtonState>()
+    val cvvRequiredLiveData = MediatorSingleLiveData<Pair<Card, Reason>?>()
+    val recoverRequiredLiveData = MediatorSingleLiveData<PaymentRecovery?>()
+    val stateUILiveData = MediatorSingleLiveData<PayButtonState>()
     private var observingService = false
 
-    private fun <T : Event<X>, X : Any, I> transform(liveData: LiveData<T>, block: (content: X) -> I): LiveData<I?> {
-        return map(liveData) { event ->
-            event.getContentIfNotHandled()?.let {
-                observingService = false
-                block(it)
-            }
+    private fun <X : Any, I> transform(liveData: LiveData<X>, block: (content: X) -> I): LiveData<I?> {
+        return map(liveData) {
+            observingService = false
+            block(it)
         }
     }
 
@@ -88,7 +85,7 @@ internal class PayButtonViewModel(
         if (connectionHelper.checkConnection()) {
             handler?.prePayment(object : OnReadyForPaymentCallback {
                 override fun call(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData?) {
-                    if(paymentConfiguration.customOptionId.isNotNullNorEmpty()) {
+                    if (paymentConfiguration.customOptionId.isNotNullNorEmpty()) {
                         paymentSettingRepository.clearToken()
                     }
                     startSecuredPayment(paymentConfiguration, confirmTrackerData)
@@ -143,12 +140,12 @@ internal class PayButtonViewModel(
                 handler?.onPaymentError(error)
                 ButtonLoadingCanceled
             }
-        stateUILiveData.addSource(paymentErrorLiveData) { value -> stateUILiveData.value = value }
+        stateUILiveData.addSource(paymentErrorLiveData) { stateUILiveData.value = it }
 
         // Visual payment event
         val visualPaymentLiveData: LiveData<VisualProcessorResult?> =
             transform(serviceLiveData.visualPaymentLiveData) { VisualProcessorResult }
-        stateUILiveData.addSource(visualPaymentLiveData) { value -> stateUILiveData.value = value }
+        stateUILiveData.addSource(visualPaymentLiveData) { stateUILiveData.value = it }
 
         // Payment finished event
         val paymentFinishedLiveData: LiveData<ButtonLoadingFinished?> =
@@ -156,16 +153,16 @@ internal class PayButtonViewModel(
                 this.paymentModel = paymentModel
                 ButtonLoadingFinished(ExplodeDecoratorMapper().map(paymentModel))
             }
-        stateUILiveData.addSource(paymentFinishedLiveData) { value -> stateUILiveData.value = value }
+        stateUILiveData.addSource(paymentFinishedLiveData) { stateUILiveData.value = it }
 
         // Cvv required event
         val cvvRequiredLiveData: LiveData<Pair<Card, Reason>?> = transform(serviceLiveData.requireCvvLiveData) { it }
-        this.cvvRequiredLiveData.addSource(cvvRequiredLiveData) { value -> this.cvvRequiredLiveData.value = value }
+        this.cvvRequiredLiveData.addSource(cvvRequiredLiveData) { this.cvvRequiredLiveData.value = it }
 
         // Invalid esc event
         val recoverRequiredLiveData: LiveData<PaymentRecovery?> =
             transform(serviceLiveData.recoverInvalidEscLiveData) { it.takeIf { it.shouldAskForCvv() } }
-        this.recoverRequiredLiveData.addSource(recoverRequiredLiveData) { value -> this.recoverRequiredLiveData.value = value }
+        this.recoverRequiredLiveData.addSource(recoverRequiredLiveData) { this.recoverRequiredLiveData.value = it }
     }
 
     private fun onPaymentProcessingError() {
