@@ -3,7 +3,7 @@ package com.mercadopago.android.px.internal.features.payment_congrats.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class PaymentCongratsText implements Parcelable {
+public final class PaymentCongratsText implements Parcelable {
 
     public static final Parcelable.Creator<PaymentCongratsText>
         CREATOR = new Parcelable.Creator<PaymentCongratsText>() {

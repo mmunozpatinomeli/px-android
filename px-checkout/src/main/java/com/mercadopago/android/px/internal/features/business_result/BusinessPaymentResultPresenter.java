@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.mercadopago.android.px.addons.FlowBehaviour;
 import com.mercadopago.android.px.internal.base.BasePresenter;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.FlowBehaviourResultMapper;
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModel;
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponse;
 import com.mercadopago.android.px.internal.features.payment_result.CongratsAutoReturn;
@@ -32,14 +33,12 @@ import org.jetbrains.annotations.NotNull;
 /* default */ class BusinessPaymentResultPresenter extends BasePresenter<BusinessPaymentResultContract.View>
     implements ActionDispatcher, BusinessPaymentResultContract.Presenter, PaymentResultBody.Listener {
 
-    private final PaymentCongratsModel model;
-    //@NonNull private final PaymentSettingRepository paymentSettings;
+    @NonNull private final PaymentCongratsModel model;
     private final ResultViewTrack viewTracker;
     private final FlowBehaviour flowBehaviour;
     @Nullable private CongratsAutoReturn.Timer autoReturnTimer;
 
-    /* default */ BusinessPaymentResultPresenter(/*@NonNull final PaymentSettingRepository paymentSettings,*/
-        @NonNull final PaymentCongratsModel model,
+    /* default */ BusinessPaymentResultPresenter(@NonNull final PaymentCongratsModel model,
         @NonNull final FlowBehaviour flowBehaviour, final boolean isMP) {
         this.model = model;
         this.flowBehaviour = flowBehaviour;
@@ -55,8 +54,7 @@ import org.jetbrains.annotations.NotNull;
     @Override
     public void onFreshStart() {
         viewTracker.track();
-        final FlowBehaviour.Result result = getResult();
-        flowBehaviour.trackConversion(result);
+        flowBehaviour.trackConversion(new FlowBehaviourResultMapper().map(model.getCongratsType()));
     }
 
     @Override
@@ -72,25 +70,7 @@ import org.jetbrains.annotations.NotNull;
             autoReturnTimer.cancel();
         }
         viewTracker.track();
-        final FlowBehaviour.Result result = getResult();
-        flowBehaviour.trackConversion(result);
-    }
-
-    @NotNull
-    private FlowBehaviour.Result getResult() {
-        final FlowBehaviour.Result result;
-        switch (model.getCongratsType()) {
-        case APPROVED:
-            result = FlowBehaviour.Result.SUCCESS;
-            break;
-        case REJECTED:
-            result = FlowBehaviour.Result.FAILURE;
-            break;
-        default:
-            result = FlowBehaviour.Result.PENDING;
-            break;
-        }
-        return result;
+        flowBehaviour.trackConversion(new FlowBehaviourResultMapper().map(model.getCongratsType()));
     }
 
     @Override

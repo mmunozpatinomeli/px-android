@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.dummy_result.RedirectHelper;
+import com.mercadopago.android.px.internal.features.payment_congrats.model.CongratsViewModelMapper;
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModel;
-import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsResponseMapper;
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentInfo;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
 import com.mercadopago.android.px.internal.view.PaymentResultHeader;
@@ -45,7 +45,7 @@ public class BusinessPaymentResultMapper extends Mapper<PaymentCongratsModel, Bu
         final PaymentCongratsModel.CongratsType type = model.getCongratsType();
         return new PaymentResultBody.Model.Builder()
             .setMethodModels(methodModels)
-            .setCongratsViewModel(new PaymentCongratsResponseMapper(new BusinessPaymentResultTracker())
+            .setCongratsViewModel(new CongratsViewModelMapper(new BusinessPaymentResultTracker())
                 .map(model.getPaymentCongratsResponse()))
             .setReceiptId((type == PaymentCongratsModel.CongratsType.APPROVED && model.getShouldShowReceipt()) ? String
                 .valueOf(model.getPaymentId()) : null)
@@ -58,16 +58,16 @@ public class BusinessPaymentResultMapper extends Mapper<PaymentCongratsModel, Bu
     }
 
     @NonNull
-    private PaymentResultHeader.Model getHeaderModel(@NonNull final PaymentCongratsModel payment) {
+    private PaymentResultHeader.Model getHeaderModel(@NonNull final PaymentCongratsModel model) {
         final PaymentResultHeader.Model.Builder builder = new PaymentResultHeader.Model.Builder();
-        builder.setIconImage(payment.getIconId() == 0 ? R.drawable.px_icon_product : payment.getIconId());
-        builder.setIconUrl(payment.getImageUrl());
-        final PaymentResultType type = PaymentResultType.from(payment.getCongratsType());
+        builder.setIconImage(model.getIconId() == 0 ? R.drawable.px_icon_product : model.getIconId());
+        builder.setIconUrl(model.getImageUrl());
+        final PaymentResultType type = PaymentResultType.from(model.getCongratsType());
         return builder
             .setBackground(type.resColor)
             .setBadgeImage(type.badge)
-            .setTitle(new GenericLocalized(payment.getTitle(), 0))
-            .setLabel(new GenericLocalized(payment.getSubtitle(), type.message))
+            .setTitle(new GenericLocalized(model.getTitle(), 0))
+            .setLabel(new GenericLocalized(model.getSubtitle(), type.message))
             .build();
     }
 }

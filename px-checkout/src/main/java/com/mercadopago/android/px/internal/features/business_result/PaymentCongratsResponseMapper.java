@@ -10,7 +10,7 @@ import com.mercadopago.android.px.model.internal.CongratsResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CongratsResponseMapper extends Mapper<CongratsResponse, PaymentCongratsResponse> {
+public class PaymentCongratsResponseMapper extends Mapper<CongratsResponse, PaymentCongratsResponse> {
 
     @Override
     public PaymentCongratsResponse map(CongratsResponse congratsResponse) {

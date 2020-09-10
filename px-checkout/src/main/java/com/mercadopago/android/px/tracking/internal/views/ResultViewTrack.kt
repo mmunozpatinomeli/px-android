@@ -73,9 +73,9 @@ class ResultViewTrack : TrackWrapper {
 
     companion object {
         private const val PATH = "$BASE_PATH/result/%s"
-        private const val SUCCESS = "success"
-        private const val PENDING = "further_action_needed"
-        private const val ERROR = "error"
-        private const val UNKNOWN = "unknown"
+        const val SUCCESS = "success"
+        const val PENDING = "further_action_needed"
+        const val ERROR = "error"
+        const val UNKNOWN = "unknown"
     }
 }

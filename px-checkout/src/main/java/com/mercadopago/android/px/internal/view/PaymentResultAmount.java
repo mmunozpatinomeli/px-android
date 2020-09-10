@@ -13,7 +13,6 @@ import java.util.Locale;
 
 public class PaymentResultAmount extends FlexboxLayout {
 
-    public static final String NO_RATE = "0";
     private final MPTextView title;
     private final MPTextView detail;
     private final MPTextView noRate;

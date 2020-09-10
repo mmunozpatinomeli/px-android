@@ -103,7 +103,7 @@ class PayButtonFragment : Fragment(), PayButton.View, SecurityValidationHandler 
             is UIError.ConnectionError -> showSnackBar(stateUI.message)
             is UIResult.PaymentResult -> PaymentResultActivity.start(this, REQ_CODE_CONGRATS, stateUI.model)
             is UIResult.NoCongratsResult -> DummyResultActivity.start(this, REQ_CODE_CONGRATS, stateUI.model)
-            is UIResult.BusinessPaymentResult -> PaymentCongrats.show(PaymentCongratsModelMapper().map(stateUI.model), activity, REQ_CODE_CONGRATS)
+            is UIResult.CongratsPaymentModel -> PaymentCongrats.show(stateUI.model, activity, REQ_CODE_CONGRATS)
         }
     }
 

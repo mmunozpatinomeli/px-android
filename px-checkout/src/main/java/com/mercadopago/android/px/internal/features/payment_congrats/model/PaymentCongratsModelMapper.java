@@ -2,19 +2,21 @@ package com.mercadopago.android.px.internal.features.payment_congrats.model;
 
 import androidx.annotation.NonNull;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.business_result.CongratsResponseMapper;
+import com.mercadopago.android.px.internal.features.business_result.PaymentCongratsResponseMapper;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.util.PaymentDataHelper;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
+import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.CongratsResponse;
+import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import java.math.BigDecimal;
 
-public class PaymentCongratsModelMapper {
+public class PaymentCongratsModelMapper extends Mapper<BusinessPaymentModel, PaymentCongratsModel> {
 
     /**
      * Takes a BusinessPaymentModel and outputs a PaymentCongratsModel
@@ -22,13 +24,14 @@ public class PaymentCongratsModelMapper {
      * @param businessPaymentModel the data to be converted
      * @return a paymentCongratsModel built from a businessPaymentModel
      */
+    @Override
     public PaymentCongratsModel map(final BusinessPaymentModel businessPaymentModel) {
 
         final PaymentSettingRepository paymentSettings =
             Session.getInstance().getConfigurationModule().getPaymentSettings();
 
         final PaymentCongratsResponse paymentCongratsResponse =
-            new CongratsResponseMapper().map(businessPaymentModel.getCongratsResponse());
+            new PaymentCongratsResponseMapper().map(businessPaymentModel.getCongratsResponse());
         final BusinessPayment businessPayment = businessPaymentModel.getPayment();
         final PXPaymentCongratsTracking tracking = new PXPaymentCongratsTracking(
             businessPaymentModel.getPaymentResult().getPaymentData().getCampaign() != null ? businessPaymentModel
@@ -45,7 +48,7 @@ public class PaymentCongratsModelMapper {
         );
         final PaymentCongratsModel.Builder builder = new PaymentCongratsModel.Builder()
             .withTracking(tracking)
-            .withPaymentStatus(getMappedResult(businessPaymentModel.getPaymentResult()))
+            .withPaymentStatus(getTrackingPaymentStatus(businessPaymentModel.getPaymentResult()))
             .withDiscountCouponsAmount(
                 PaymentDataHelper.getTotalDiscountAmount(businessPaymentModel.getPaymentResult().getPaymentDataList()))
             .withCongratsType(
@@ -143,16 +146,16 @@ public class PaymentCongratsModelMapper {
         return CurrenciesUtil.getLocalizedAmountWithoutZeroDecimals(currency, amount);
     }
 
-    private String getMappedResult(final PaymentResult paymentResult) {
+    private String getTrackingPaymentStatus(final PaymentResult paymentResult) {
         final String status;
         if (paymentResult.isApproved() || paymentResult.isInstructions()) {
-            status = PaymentCongratsModel.SUCCESS;
+            status = ResultViewTrack.SUCCESS;
         } else if (paymentResult.isRejected()) {
-            status = PaymentCongratsModel.ERROR;
+            status = ResultViewTrack.ERROR;
         } else if (paymentResult.isPending()) {
-            status = PaymentCongratsModel.PENDING;
+            status = ResultViewTrack.PENDING;
         } else {
-            status = PaymentCongratsModel.UNKNOWN;
+            status = ResultViewTrack.UNKNOWN;
         }
         return status;
     }

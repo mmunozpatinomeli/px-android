@@ -68,8 +68,7 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
     @NonNull
     private BusinessPaymentResultPresenter createPresenter() {
         final PaymentCongratsModel model = getIntent().getParcelableExtra(PAYMENT_CONGRATS);
-         //TODO FIX PAYMENTSETTINGS PARAM
-        return new BusinessPaymentResultPresenter(/*null,*/model,
+        return new BusinessPaymentResultPresenter(model,
             BehaviourProvider.getFlowBehaviour(), isMP(this));
     }
 

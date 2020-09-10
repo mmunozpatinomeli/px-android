@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class PaymentCongratsResponseMapper extends Mapper<PaymentCongratsResponse, CongratsViewModel> {
+public class CongratsViewModelMapper extends Mapper<PaymentCongratsResponse, CongratsViewModel> {
 
     /* default */ final BusinessPaymentResultTracker discountTracker;
 
@@ -34,7 +34,7 @@ public class PaymentCongratsResponseMapper extends Mapper<PaymentCongratsRespons
      *
      * @param discountTracker A {@link BusinessPaymentResultTracker}
      */
-    public PaymentCongratsResponseMapper(final BusinessPaymentResultTracker discountTracker) {
+    public CongratsViewModelMapper(final BusinessPaymentResultTracker discountTracker) {
         this.discountTracker = discountTracker;
     }
 

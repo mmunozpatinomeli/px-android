@@ -44,7 +44,7 @@ public final class ResultViewTrackModel extends TrackingMapModel {
             paymentModel.getPaymentResult().getPaymentId(),
             paymentModel.getPaymentResult().getPaymentStatus(),
             paymentModel.getPaymentResult().getPaymentStatusDetail(),
-            PaymentDataHelper.isSplitPayment(paymentModel.getPaymentResult().getPaymentDataList()),
+            PaymentDataHelper.isSplitPaymentData(paymentModel.getPaymentResult().getPaymentDataList()),
             checkoutPreference.getTotalAmount(),
             PaymentDataHelper
                 .getTotalDiscountAmount(paymentModel.getPaymentResult().getPaymentDataList()),
@@ -74,7 +74,7 @@ public final class ResultViewTrackModel extends TrackingMapModel {
             paymentCongratsModel.getPaymentId(),
             paymentCongratsModel.getCongratsType().name(),
             paymentCongratsModel.getPxPaymentCongratsTracking().getPaymentStatusDetail(),
-            PaymentDataHelper.isSplitPayment(paymentCongratsModel.getPaymentsInfo()),
+            PaymentDataHelper.isSplitPaymentInfo(paymentCongratsModel.getPaymentsInfo()),
             paymentCongratsModel.getPxPaymentCongratsTracking().getTotalAmount(),
             paymentCongratsModel.getDiscountCouponsAmount(),
             paymentCongratsModel.getPaymentCongratsResponse().getLoyalty() != null ? paymentCongratsModel
@@ -88,7 +88,7 @@ public final class ResultViewTrackModel extends TrackingMapModel {
                     .map(paymentCongratsModel.getPaymentCongratsResponse().getDiscount().getItems())) : null,
             paymentCongratsModel.getPxPaymentCongratsTracking().getCampaignId(),
             paymentCongratsModel.getPxPaymentCongratsTracking().getPaymentMethodId(),
-            paymentCongratsModel.getPaymentsInfo().get(0).paymentMethodType.name(),
+            paymentCongratsModel.getPaymentsInfo().get(0).paymentMethodType.name().toLowerCase(),
             paymentCongratsModel.getPxPaymentCongratsTracking().getCurrencyId(),
             paymentCongratsModel.getPaymentData());
         hasBottomView = paymentCongratsModel.hasBottomFragment();
