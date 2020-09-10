@@ -9,7 +9,6 @@ import com.mercadopago.android.px.KArgumentCaptor;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.core.internal.PaymentWrapper;
-import com.mercadopago.android.px.internal.callbacks.Event;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.internal.core.FileManager;
 import com.mercadopago.android.px.internal.model.SecurityType;
@@ -26,7 +25,6 @@ import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
-import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodMapper;
 import com.mercadopago.android.px.mocks.InitResponseStub;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
@@ -188,7 +186,7 @@ public class PaymentServiceTest {
 
     @Test
     public void whenSavedCardAndESCSavedThenAskTokenButFailApiCallThenCVVIsRequiered() {
-        final Observer<Event<Pair<Card, Reason>>> cvvRequiredObserver = mock(Observer.class);
+        final Observer<Pair<Card, Reason>> cvvRequiredObserver = mock(Observer.class);
         final Card card = savedCreditCardOneTapPresent(CARD_ID_ESC_APPROVED);
         when(escPaymentManager.hasEsc(card)).thenReturn(true);
         when(tokenRepository.createToken(card)).thenReturn(new StubFailMpCall(mock(ApiException.class)));
@@ -203,7 +201,7 @@ public class PaymentServiceTest {
         verifyNoMoreInteractions(tokenRepository);
 
         // if api call to tokenize fails, then ask for CVV.
-        verify(cvvRequiredObserver).onChanged(any(Event.class));
+        verify(cvvRequiredObserver).onChanged(any(Pair.class));
         verifyNoMoreInteractions(cvvRequiredObserver);
     }
 
@@ -238,7 +236,7 @@ public class PaymentServiceTest {
 
     @Test
     public void whenOneTapPaymentWhenCapExceededThenAskCVV() {
-        final Observer<Event<Pair<Card, Reason>>> cvvRequiredObserver = mock(Observer.class);
+        final Observer<Pair<Card, Reason>> cvvRequiredObserver = mock(Observer.class);
         final Card card = savedCreditCardOneTapPresent(CARD_ID_ESC_REJECTED);
         when(escPaymentManager.hasEsc(card)).thenReturn(true);
         when(escManagerBehaviour.isESCEnabled()).thenReturn(true);
@@ -247,7 +245,7 @@ public class PaymentServiceTest {
         paymentService.getObservableEvents().getRequireCvvLiveData().observeForever(cvvRequiredObserver);
 
         verify(escPaymentManager).hasEsc(card);
-        verify(cvvRequiredObserver).onChanged(any(Event.class));
+        verify(cvvRequiredObserver).onChanged(any(Pair.class));
         verifyNoMoreInteractions(cvvRequiredObserver);
         verifyNoMoreInteractions(escPaymentManager);
         verifyNoMoreInteractions(tokenRepository);
@@ -270,7 +268,7 @@ public class PaymentServiceTest {
 
     @Test
     public void whenOneTapStartPaymentAndPaymentError() {
-        final Observer<Event<MercadoPagoError>> errorObserver = mock(Observer.class);
+        final Observer<MercadoPagoError> errorObserver = mock(Observer.class);
         when(userSelectionRepository.getPaymentMethod().getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
         when(userSelectionRepository.getPayerCost()).thenReturn(null);
         when(amountConfigurationRepository.getCurrentConfiguration()).thenReturn(mock(AmountConfiguration.class));
@@ -284,7 +282,7 @@ public class PaymentServiceTest {
 
     @Test
     public void whenOneTapStartPaymentAndShouldShowVisualPayment() {
-        final Observer<Event<Unit>> visualPaymentObserver = mock(Observer.class);
+        final Observer<Unit> visualPaymentObserver = mock(Observer.class);
         when(userSelectionRepository.hasCardSelected()).thenReturn(true);
         when(userSelectionRepository.getPayerCost()).thenReturn(mock(PayerCost.class));
         when(paymentSettingRepository.hasToken()).thenReturn(true);

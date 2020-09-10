@@ -74,12 +74,17 @@ class OfflineMethodsFragment : Fragment(), OfflineMethods.View, BackHandler {
         payButtonFragment = childFragmentManager.findFragmentById(R.id.pay_button) as PayButtonFragment
         payButtonFragment.disable()
 
-        configureBottomSheet()
+        configureBottomSheet(savedInstanceState)
 
         viewModel.onViewLoaded().nonNullObserveOnce(viewLifecycleOwner) { model -> draw(model) }
-        viewModel.getObservableDeepLink().nonNullObserve(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.run { startKnowYourCustomerFlow(this) }
+        viewModel.getObservableDeepLink().nonNullObserve(viewLifecycleOwner) { deepLink ->
+            startKnowYourCustomerFlow(deepLink)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(EXTRA_BOTTOM_SHEET_STATE, bottomSheetBehavior.state)
     }
 
     private fun draw(model: OfflineMethods.Model) {
@@ -89,10 +94,9 @@ class OfflineMethodsFragment : Fragment(), OfflineMethods.View, BackHandler {
         adapter.setItems(FromOfflinePaymentTypesMetadataToOfflineItems.map(model.offlinePaymentTypes))
     }
 
-    private fun configureBottomSheet() {
+    private fun configureBottomSheet(savedInstanceState: Bundle?) {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.isHideable = true
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(view: View, state: Int) {}
             override fun onSlide(view: View, offset: Float) {
@@ -102,6 +106,14 @@ class OfflineMethodsFragment : Fragment(), OfflineMethods.View, BackHandler {
                 footer.alpha.takeIf { it == 0f }?.run { footer.invisible() } ?: run { footer.visible() }
             }
         })
+
+        savedInstanceState?.let {
+            it.getInt(EXTRA_BOTTOM_SHEET_STATE).let { state ->
+                bottomSheetBehavior.state = state
+                if (state == BottomSheetBehavior.STATE_HIDDEN) footer.invisible() else footer.visible()
+                if (state == BottomSheetBehavior.STATE_EXPANDED) header.visible() else header.invisible()
+            }
+        } ?: run { bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN }
     }
 
     private fun configureRecycler(recycler: RecyclerView) {
@@ -213,6 +225,7 @@ class OfflineMethodsFragment : Fragment(), OfflineMethods.View, BackHandler {
     }
 
     companion object {
+        private const val EXTRA_BOTTOM_SHEET_STATE = "bottom_sheet_state"
         private const val TOP = -1
     }
 }

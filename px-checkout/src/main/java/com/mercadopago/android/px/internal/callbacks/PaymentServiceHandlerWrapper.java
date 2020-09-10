@@ -222,7 +222,7 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
                 handler.onCvvRequired(card, reason);
             }
             if(eventHandler != null) {
-                eventHandler.getRequireCvvLiveData().setValue(new Event<>(new Pair<>(card, reason)));
+                eventHandler.getRequireCvvLiveData().setValue(new Pair<>(card, reason));
             }
         }
     }
@@ -242,7 +242,7 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
                 handler.onRecoverPaymentEscInvalid(recovery);
             }
             if(eventHandler != null) {
-                eventHandler.getRecoverInvalidEscLiveData().setValue(new Event<>(recovery));
+                eventHandler.getRecoverInvalidEscLiveData().setValue(recovery);
             }
         }
     }
@@ -262,7 +262,7 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
                 handler.onPostPayment(paymentModel);
             }
             if(eventHandler != null) {
-                eventHandler.getPaymentFinishedLiveData().setValue(new Event<>(paymentModel));
+                eventHandler.getPaymentFinishedLiveData().setValue(paymentModel);
             }
         }
     }
@@ -282,7 +282,7 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
                 handler.onPaymentError(error);
             }
             if(eventHandler != null) {
-                eventHandler.getPaymentErrorLiveData().setValue(new Event<>((error)));
+                eventHandler.getPaymentErrorLiveData().setValue((error));
             }
         }
     }
@@ -295,7 +295,7 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
                 handler.onVisualPayment();
             }
             if(eventHandler != null) {
-                eventHandler.getVisualPaymentLiveData().setValue(new Event<>(Unit.INSTANCE));
+                eventHandler.getVisualPaymentLiveData().setValue(Unit.INSTANCE);
             }
         }
     }
