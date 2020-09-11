@@ -55,7 +55,7 @@ public class PaymentResultMethod extends ConstraintLayout {
     public void setModel(@NonNull final Model model) {
         ImageViewExtensionsKt.loadOrElse(icon, model.imageUrl, R.drawable.px_generic_method);
         ViewUtils.loadOrGone(getDescription(model), description);
-        ViewUtils.loadOrHide(View.GONE, model.paymentMethodDescription, paymentMethodStatement);
+        ViewUtils.loadOrGone(model.paymentMethodDescription, paymentMethodStatement);
         ViewUtils.loadOrGone(getStatement(model), statement);
         amount.setModel(model.amountModel);
         renderInfo(model.info);
@@ -94,27 +94,6 @@ public class PaymentResultMethod extends ConstraintLayout {
     }
 
     public static final class Model {
-        @NonNull /* default */ final String paymentMethodId;
-        @NonNull /* default */ final String paymentMethodName;
-        @Nullable /* default */ final String imageUrl;
-        @NonNull /* default */ final PaymentCongratsText paymentMethodDescription;
-        @NonNull /* default */ final String paymentTypeId;
-        @NonNull /* default */ final PaymentResultAmount.Model amountModel;
-        @Nullable /* default */ final String lastFourDigits;
-        @Nullable /* default */ final String statement;
-        @Nullable /* default */ final PaymentResultInfo info;
-
-        /* default */ Model(@NonNull final Builder builder) {
-            paymentMethodId = builder.paymentMethodId;
-            paymentMethodName = builder.paymentMethodName;
-            imageUrl = builder.imageUrl;
-            paymentMethodDescription = builder.paymentMethodDescription;
-            paymentTypeId = builder.paymentTypeId;
-            amountModel = builder.amountModel;
-            lastFourDigits = builder.lastFourDigits;
-            statement = builder.statement;
-            info = builder.info;
-        }
 
         public static Model with(@Nullable final String imageUrl, @NonNull final PaymentData paymentData,
             @NonNull final Currency currency) {
@@ -187,6 +166,28 @@ public class PaymentResultMethod extends ConstraintLayout {
                 .setAmountModel(amountModel)
                 .setInfo(paymentInfo.consumerCreditsInfo)
                 .build();
+        }
+
+        @NonNull /* default */ final String paymentMethodId;
+        @NonNull /* default */ final String paymentMethodName;
+        @Nullable /* default */ final String imageUrl;
+        @NonNull /* default */ final PaymentCongratsText paymentMethodDescription;
+        @NonNull /* default */ final String paymentTypeId;
+        @NonNull /* default */ final PaymentResultAmount.Model amountModel;
+        @Nullable /* default */ final String lastFourDigits;
+        @Nullable /* default */ final String statement;
+        @Nullable /* default */ final PaymentResultInfo info;
+
+        /* default */ Model(@NonNull final Builder builder) {
+            paymentMethodId = builder.paymentMethodId;
+            paymentMethodName = builder.paymentMethodName;
+            imageUrl = builder.imageUrl;
+            paymentMethodDescription = builder.paymentMethodDescription;
+            paymentTypeId = builder.paymentTypeId;
+            amountModel = builder.amountModel;
+            lastFourDigits = builder.lastFourDigits;
+            statement = builder.statement;
+            info = builder.info;
         }
 
         public static class Builder {

@@ -104,9 +104,9 @@ public final class ViewUtils {
         }
     }
 
-    public static boolean loadOrHide(final int visibility, @Nullable final PaymentCongratsText text, @NonNull final MPTextView view) {
+    public static boolean loadOrGone(@Nullable final PaymentCongratsText text, @NonNull final MPTextView view) {
         if (text == null || TextUtil.isEmpty(text.getMessage())) {
-            view.setVisibility(visibility);
+            view.setVisibility(View.GONE);
             return false;
         } else {
             view.setText(text);

@@ -48,7 +48,6 @@ public class PaymentCongratsModelMapper extends Mapper<BusinessPaymentModel, Pay
         );
         final PaymentCongratsModel.Builder builder = new PaymentCongratsModel.Builder()
             .withTracking(tracking)
-            .withPaymentStatus(getTrackingPaymentStatus(businessPaymentModel.getPaymentResult()))
             .withDiscountCouponsAmount(
                 PaymentDataHelper.getTotalDiscountAmount(businessPaymentModel.getPaymentResult().getPaymentDataList()))
             .withCongratsType(

@@ -28,7 +28,7 @@ class ResultViewTrack : TrackWrapper {
 
     constructor(paymentModel: PaymentCongratsModel, isMP: Boolean) {
         resultViewTrackModel = ResultViewTrackModel(paymentModel, isMP)
-        paymentStatus = paymentModel.paymentStatus
+        paymentStatus = paymentModel.trackingPaymentStatus
         this.remediesResponse = RemediesResponse.EMPTY
     }
 

@@ -58,7 +58,7 @@ public class PaymentCongratsModel implements Parcelable {
     //Internal PX Tracking data
     @Nullable private final Long paymentId;
     @NonNull private final PXPaymentCongratsTracking pxPaymentCongratsTracking;
-    @NonNull private final String paymentStatus;
+    @NonNull private final String trackingPaymentStatus;
     @NonNull private final PaymentData paymentData;
     @Nullable private final BigDecimal discountCouponsAmount;
 
@@ -80,7 +80,7 @@ public class PaymentCongratsModel implements Parcelable {
         bottomFragment = builder.bottomFragment;
         importantFragment = builder.importantFragment;
         paymentCongratsResponse = builder.paymentCongratsResponse;
-        paymentStatus = builder.paymentStatus;
+        trackingPaymentStatus = builder.trackingPaymentStatus;
         paymentData = builder.paymentData;
         discountCouponsAmount = builder.discountCouponsAmount;
         pxPaymentCongratsTracking = builder.pxPaymentCongratsTracking;
@@ -109,7 +109,7 @@ public class PaymentCongratsModel implements Parcelable {
         bottomFragment = in.readParcelable(ExternalFragment.class.getClassLoader());
         importantFragment = in.readParcelable(ExternalFragment.class.getClassLoader());
         paymentCongratsResponse = in.readParcelable(PaymentCongratsResponse.class.getClassLoader());
-        paymentStatus = in.readString();
+        trackingPaymentStatus = in.readString();
         paymentData = (PaymentData) in.readSerializable();
         if (in.readByte() == 0) {
             discountCouponsAmount = null;
@@ -149,7 +149,7 @@ public class PaymentCongratsModel implements Parcelable {
         dest.writeParcelable(bottomFragment, flags);
         dest.writeParcelable(importantFragment, flags);
         dest.writeParcelable(paymentCongratsResponse, flags);
-        dest.writeString(paymentStatus);
+        dest.writeString(trackingPaymentStatus);
         dest.writeSerializable(paymentData);
         if (discountCouponsAmount == null) {
             dest.writeByte((byte) 0);
@@ -267,8 +267,8 @@ public class PaymentCongratsModel implements Parcelable {
     }
 
     @NonNull
-    public String getPaymentStatus() {
-        return paymentStatus;
+    public String getTrackingPaymentStatus() {
+        return trackingPaymentStatus;
     }
 
     @NonNull
@@ -349,7 +349,7 @@ public class PaymentCongratsModel implements Parcelable {
         //Internal PX Tracking data
         /* default */ Long paymentId;
         /* default */ PXPaymentCongratsTracking pxPaymentCongratsTracking;
-        /* default */ String paymentStatus;
+        /* default */ String trackingPaymentStatus;
         /* default */ PaymentData paymentData;
         /* default */ BigDecimal discountCouponsAmount;
 
@@ -363,13 +363,13 @@ public class PaymentCongratsModel implements Parcelable {
             }
             switch (congratsType) {
             case APPROVED:
-                paymentStatus = ResultViewTrack.SUCCESS;
+                trackingPaymentStatus = ResultViewTrack.SUCCESS;
                 break;
             case PENDING:
-                paymentStatus = ResultViewTrack.PENDING;
+                trackingPaymentStatus = ResultViewTrack.PENDING;
                 break;
             case REJECTED:
-                paymentStatus = ResultViewTrack.ERROR;
+                trackingPaymentStatus = ResultViewTrack.ERROR;
                 break;
             }
             paymentCongratsResponse =
@@ -630,22 +630,13 @@ public class PaymentCongratsModel implements Parcelable {
          * @param customSorting allows to activate custom order
          * @return builder with the added boolean
          */
-        /* default */ Builder withCustomSorting(final boolean customSorting) {
+        public Builder withCustomSorting(final boolean customSorting) {
             this.customSorting = customSorting;
             return this;
         }
 
         public Builder withTracking(@NonNull final PXPaymentCongratsTracking tracking) {
             pxPaymentCongratsTracking = tracking;
-            return this;
-        }
-
-        /**
-         * @param paymentStatus the status of the payment
-         * @return builder with the added String
-         */
-        /* default */ Builder withPaymentStatus(final String paymentStatus) {
-            this.paymentStatus = paymentStatus;
             return this;
         }
 
